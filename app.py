@@ -37,7 +37,7 @@ def create_app():
     
     # Initialize routes with dependencies
     auth_routes = init_auth_routes(user_model)
-    dashboard_routes = init_dashboard_routes(user_model, game_model)
+    dashboard_routes = init_dashboard_routes(user_model, game_model, settlement_model)
     game_routes = init_game_routes(user_model, game_model, settlement_model)
     admin_routes = init_admin_routes(user_model)
     

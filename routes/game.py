@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify, flash
 from routes.dashboard import login_required
+from datetime import datetime, timedelta
 
 game_bp = Blueprint('game', __name__)
 
@@ -16,7 +17,45 @@ def init_routes(user_model, game_model, settlement_model):
         if not game:
             return redirect(url_for('dashboard.index'))
         
-        return render_template('game.html', game=game, user_id=user_id)
+        return render_template('game.html', game=game, user_id=user_id, game_id=game_id)
+
+    @game_bp.route('/check_game_status')
+    @login_required
+    def check_game_status():
+        user_id = session['user_id']
+        game_id = request.args.get('game_id')
+        
+        if not game_id:
+            return jsonify({'success': False, 'error': 'Game ID required'})
+        
+        # Load user and game data
+        user_data = user_model.load_user_data(user_id)
+        game = game_model.get_game(user_id, game_id)
+        
+        if not game:
+            return jsonify({'success': False, 'error': 'Game not found'})
+        
+        # Check if game expiration is enabled
+        game_expiration_enabled = user_data.get('game_expiration_enabled', False)
+        
+        # Check if settlement has been calculated
+        settlement_calculated_at = game.get('settlement_calculated_at')
+        
+        view_only = False
+        if game_expiration_enabled and settlement_calculated_at:
+            # Parse settlement calculation time
+            calculation_time = datetime.strptime(settlement_calculated_at, '%Y-%m-%d %H:%M:%S')
+            
+            # Check if it's been more than one day
+            if datetime.now() - calculation_time > timedelta(days=1):
+                view_only = True
+        
+        return jsonify({
+            'success': True,
+            'view_only': view_only,
+            'settlement_calculated_at': settlement_calculated_at,
+            'game_expiration_enabled': game_expiration_enabled
+        })
 
     @game_bp.route('/add_player', methods=['POST'])
     @login_required

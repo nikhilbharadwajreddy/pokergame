@@ -46,4 +46,29 @@ def init_routes(user_model):
         
         return render_template('admin.html', user_files=user_files)
 
+    @admin_bp.route('/admin/update_user_setting', methods=['POST'])
+    def update_user_setting():
+        # Check if admin is logged in
+        if 'admin' not in session:
+            flash('Admin access required')
+            return redirect(url_for('admin.admin'))
+            
+        user_id = request.form.get('user_id')
+        if not user_id:
+            flash('User ID is required')
+            return redirect(url_for('admin.admin'))
+            
+        # Get the game_expiration_enabled setting
+        game_expiration_enabled = 'game_expiration_enabled' in request.form
+        
+        # Update the user setting
+        success = user_model.update_user_setting(user_id, 'game_expiration_enabled', game_expiration_enabled)
+        
+        if success:
+            flash(f'User settings updated for {user_id}')
+        else:
+            flash(f'Error updating settings for {user_id}')
+            
+        return redirect(url_for('admin.admin', view_user=user_id))
+
     return admin_bp

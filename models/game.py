@@ -10,7 +10,7 @@ class GameModel:
     
     def create_game(self, user_id, game_name=None):
         """
-        Create a new game for a user.
+        Create a new game for a user. If a game with the same name exists, update it.
         """
         # Load user data
         user_data = self.user_model.load_user_data(user_id)
@@ -19,32 +19,45 @@ class GameModel:
         if not game_name:
             game_name = f"Game {datetime.now().strftime('%Y-%m-%d %H:%M')}"
         
-        # Generate unique ID for the game
-        game_id = str(uuid.uuid4())
+        # Check if a game with this name already exists
+        existing_game = next((g for g in user_data.get('games', []) if g.get('game_name') == game_name), None)
         
-        # Create new game object
-        new_game = {
-            'game_id': game_id,
-            'game_name': game_name,
-            'date_created': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'players': [],
-            'groups': []
-        }
-        
-        # Copy existing players and groups to the new game
-        for player in user_data.get('players', []):
-            new_game['players'].append({
-                'name': player['name'],
-                'group': None,
-                'buy_in': 10,
-                'final_amount': 0
-            })
-        
-        for group in user_data.get('groups', []):
-            new_game['groups'].append(group)
-        
-        # Add game to user's games list
-        user_data['games'].append(new_game)
+        if existing_game:
+            # Update the existing game's timestamp
+            game_id = existing_game['game_id']
+            existing_game['date_created'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            existing_game['last_updated'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # We keep the existing players and groups
+        else:
+            # Generate unique ID for the new game
+            game_id = str(uuid.uuid4())
+            
+            # Create new game object
+            new_game = {
+                'game_id': game_id,
+                'game_name': game_name,
+                'date_created': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'settlement_calculated_at': None,  # Track when settlement was calculated
+                'players': [],
+                'groups': [],
+                'settlement_history': []
+            }
+            
+            # Copy existing players and groups to the new game
+            for player in user_data.get('players', []):
+                new_game['players'].append({
+                    'name': player['name'],
+                    'group': None,
+                    'buy_in': 10,
+                    'final_amount': 0
+                })
+            
+            for group in user_data.get('groups', []):
+                new_game['groups'].append(group)
+            
+            # Add game to user's games list
+            user_data['games'].append(new_game)
         
         # Save updated user data
         self.user_model.save_user_data(user_id, user_data)

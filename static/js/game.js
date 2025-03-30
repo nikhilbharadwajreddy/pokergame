@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // First, check if game should be in view-only mode
+    checkGameStatus();
+    
     // Set up player updates
     setupPlayerUpdates();
     
@@ -14,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 .finally(() => {
                     this.disabled = false;
                     this.innerHTML = '<i class="bi bi-calculator"></i> Calculate Settlement';
+                    // Only check game status without forcing refresh
+                    setTimeout(() => {
+                        checkGameStatus(false);
+                    }, 3000);
                 });
         });
     }
@@ -27,6 +34,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Check if game should be in view-only mode
+function checkGameStatus(forceRefresh = false) {
+    const gameId = document.querySelector('input[name="game_id"]').value;
+    
+    fetch(`/check_game_status?game_id=${gameId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.view_only) {
+                // If game should be view-only, disable all inputs and buttons
+                makeGameViewOnly();
+            } else if (forceRefresh) {
+                // Refresh the page if we just calculated a settlement
+                window.location.reload();
+            }
+        })
+        .catch(error => console.error('Error checking game status:', error));
+}
+
+// Make game view-only by disabling all inputs and buttons
+function makeGameViewOnly() {
+    // Disable all inputs
+    document.querySelectorAll('input, select, button').forEach(element => {
+        element.disabled = true;
+    });
+    
+    // Add view-only notice
+    const gameForm = document.querySelector('.game-form');
+    if (gameForm) {
+        const viewOnlyNotice = document.createElement('div');
+        viewOnlyNotice.className = 'alert alert-info';
+        viewOnlyNotice.innerHTML = '<i class="bi bi-info-circle"></i> This game is in view-only mode. Settlements have been calculated.';
+        gameForm.prepend(viewOnlyNotice);
+    }
+}
 
 // Handle all player updates
 function setupPlayerUpdates() {

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 class SettlementModel:
     def __init__(self, user_model=None, game_model=None):
         """
@@ -119,6 +121,7 @@ class SettlementModel:
         game_obj = next((g for g in user_data['games'] if g['game_id'] == game_id), None)
         if game_obj:
             game_obj['settlement'] = result
+            game_obj['settlement_calculated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.user_model.save_user_data(user_id, user_data)
         
         return {'success': True, 'result': result}

@@ -39,15 +39,19 @@ class UserModel:
         Load user data from the database.
         """
         if not self.users_collection:
-            return {'user_id': user_id, 'players': [], 'groups': [], 'games': []}
+            return {'user_id': user_id, 'players': [], 'groups': [], 'games': [], 'game_expiration_enabled': True}
         
         user_data = self.users_collection.find_one({"user_id": user_id})
         if not user_data:
-            return {'user_id': user_id, 'players': [], 'groups': [], 'games': []}
+            return {'user_id': user_id, 'players': [], 'groups': [], 'games': [], 'settlement_history': [], 'game_expiration_enabled': True}
         
         # Convert MongoDB ObjectId to string for JSON serialization
         if '_id' in user_data:
             user_data['_id'] = str(user_data['_id'])
+            
+        # Ensure game_expiration_enabled is set (default: False)
+        if 'game_expiration_enabled' not in user_data:
+            user_data['game_expiration_enabled'] = True
             
         return user_data
     
@@ -85,10 +89,25 @@ class UserModel:
                 'user_id': user.get('user_id'),
                 'modified_date': modified_date,
                 'game_count': game_count,
-                'player_count': player_count
+                'player_count': player_count,
+                'game_expiration_enabled': user.get('game_expiration_enabled', False)
             })
             
         # Sort by modified date (newest first)
         users.sort(key=lambda x: x['modified_date'], reverse=True)
         
         return users
+        
+    def update_user_setting(self, user_id, setting_name, setting_value):
+        """
+        Update a specific user setting.
+        """
+        if not self.users_collection:
+            return False
+            
+        result = self.users_collection.update_one(
+            {"user_id": user_id},
+            {"$set": {setting_name: setting_value}}
+        )
+        
+        return result.acknowledged

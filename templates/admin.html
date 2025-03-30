@@ -156,9 +156,9 @@
                                 <tr>
                                     <th>User ID</th>
                                     <th>Last Modified</th>
-                                    <th>Size</th>
                                     <th>Games</th>
                                     <th>Players</th>
+                                    <th>Game Expiration</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -167,9 +167,9 @@
                                     <tr>
                                         <td><strong>{{ user.user_id }}</strong></td>
                                         <td>{{ user.modified_date }}</td>
-                                        <td>{{ (user.file_size / 1024)|round(1) }} KB</td>
                                         <td>{{ user.game_count }}</td>
                                         <td>{{ user.player_count }}</td>
+                                        <td>{{ "Enabled" if user.game_expiration_enabled else "Disabled" }}</td>
                                         <td>
                                             <div class="btn-group" role="group">
                                                 <a href="/admin?view_user={{ user.user_id }}" class="btn btn-sm btn-primary">
