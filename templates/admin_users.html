@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Poker Settle - Admin Dashboard</title>
+    <title>Poker Settle - Admin Users</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
@@ -94,6 +94,20 @@
         .bi {
             margin-right: 4px;
         }
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            padding-left: 38px;
+            border-radius: 20px;
+        }
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 10px;
+            color: #adb5bd;
+        }
         
         @media (max-width: 767px) {
             .container {
@@ -132,16 +146,25 @@
         <div class="admin-header">
             <div class="row">
                 <div class="col-md-8">
-                    <h2><i class="bi bi-shield-lock"></i> Admin Dashboard</h2>
-                    <p class="mb-0">Manage user accounts and data</p>
+                    <h2><i class="bi bi-people"></i> User Management</h2>
+                    <p class="mb-0">View and manage user accounts</p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <a href="/admin/dashboard" class="btn btn-outline-light me-2">
-                        <i class="bi bi-speedometer2"></i> Enhanced Dashboard
+                    <a href="/admin" class="btn btn-outline-light me-2">
+                        <i class="bi bi-speedometer2"></i> Dashboard
                     </a>
                     <a href="/logout" class="btn btn-outline-light">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="userSearchInput" class="form-control" placeholder="Search users...">
                 </div>
             </div>
         </div>
@@ -167,15 +190,22 @@
                             </thead>
                             <tbody>
                                 {% for user in user_files %}
-                                    <tr>
-                                        <td><strong>{{ user.user_id }}</strong></td>
+                                    <tr class="user-table-row">
+                                        <td class="user-id"><strong>{{ user.user_id }}</strong></td>
                                         <td>{{ user.modified_date }}</td>
                                         <td>{{ user.game_count }}</td>
                                         <td>{{ user.player_count }}</td>
-                                        <td>{{ "Enabled" if user.game_expiration_enabled else "Disabled" }}</td>
+                                        <td>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input toggle-game-expiration" type="checkbox" 
+                                                    data-user-id="{{ user.user_id }}"
+                                                    {% if user.game_expiration_enabled %}checked{% endif %}
+                                                    onchange="toggleGameExpiration(this)">
+                                            </div>
+                                        </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="/admin?view_user={{ user.user_id }}" class="btn btn-sm btn-primary">
+                                                <a href="/admin/users/{{ user.user_id }}" class="btn btn-sm btn-primary">
                                                     <i class="bi bi-eye"></i> View
                                                 </a>
                                                 <button type="button" class="btn btn-sm btn-danger" 
@@ -198,6 +228,8 @@
                 {% endif %}
             </div>
         </div>
+        
+
     </div>
     
     <!-- Delete Confirmation Modal -->
@@ -213,8 +245,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form action="/admin" method="post">
-                        <input type="hidden" name="delete_user" id="deleteUserIdInput">
+                    <form action="/admin/delete_user" method="post">
+                        <input type="hidden" name="user_id" id="deleteUserIdInput">
                         <button type="submit" class="btn btn-danger">Delete User</button>
                     </form>
                 </div>
@@ -236,6 +268,76 @@
                 const userId = button.getAttribute('data-user-id');
                 document.getElementById('deleteUserId').textContent = userId;
                 document.getElementById('deleteUserIdInput').value = userId;
+            });
+        }
+        
+        // User search functionality
+        const searchInput = document.getElementById('userSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const userRows = document.querySelectorAll('.user-table-row');
+                
+                userRows.forEach(row => {
+                    const userId = row.querySelector('.user-id').textContent.toLowerCase();
+                    if (userId.includes(searchTerm)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            });
+        }
+        
+        // Toggle game expiration
+        function toggleGameExpiration(checkbox) {
+            const userId = checkbox.getAttribute('data-user-id');
+            const isEnabled = checkbox.checked;
+            
+            fetch('/admin/update_user_setting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `user_id=${userId}&game_expiration_enabled=${isEnabled ? 'on' : 'off'}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show a quick toast notification
+                    const toast = document.createElement('div');
+                    toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed bottom-0 end-0 m-3';
+                    toast.setAttribute('role', 'alert');
+                    toast.setAttribute('aria-live', 'assertive');
+                    toast.setAttribute('aria-atomic', 'true');
+                    toast.innerHTML = `
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                Setting updated for user ${userId}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
+                    `;
+                    document.body.appendChild(toast);
+                    
+                    // Initialize and show the toast
+                    const bsToast = new bootstrap.Toast(toast);
+                    bsToast.show();
+                    
+                    // Remove from DOM after hiding
+                    toast.addEventListener('hidden.bs.toast', function () {
+                        document.body.removeChild(toast);
+                    });
+                } else {
+                    // Reset checkbox state if update failed
+                    checkbox.checked = !isEnabled;
+                    alert('Failed to update setting. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                checkbox.checked = !isEnabled;
+                alert('An error occurred. Please try again.');
             });
         }
     </script>

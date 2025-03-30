@@ -1,20 +1,12 @@
 from pymongo import MongoClient
-import os
-import urllib.parse
+import logging
+from .config import get_mongodb_connection_string
 
 def get_mongodb_client():
     """
     Get a MongoDB client connection using credentials from environment or default values.
     """
-    username = os.environ.get('MONGO_USERNAME', 'nikhilreddy')
-    password = os.environ.get('MONGO_PASSWORD', 'admin123')
-    encoded_password = urllib.parse.quote_plus(password)
-    
-    # Use the exact format from your connection string
-    mongo_uri = os.environ.get(
-        'MONGO_URI', 
-        f'mongodb+srv://{username}:{encoded_password}@cluster0.kiaqj2n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tlsAllowInvalidCertificates=true'
-    )
+    mongo_uri = get_mongodb_connection_string()
     
     try:
         client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)  # 5 second timeout

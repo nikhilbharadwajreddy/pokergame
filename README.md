@@ -1,3 +1,142 @@
+# Poker Game Settlement App
+
+A web application for tracking poker games and calculating settlements between players.
+
+## Features
+
+- User accounts and authentication
+- Create and manage poker games
+- Add players to games with buy-ins
+- Track chips and calculate settlements
+- Admin dashboard for system management
+
+## Deployment on Fly.io
+
+### Prerequisites
+
+- [Fly CLI](https://fly.io/docs/hands-on/install-flyctl/) installed
+- Fly.io account
+- MongoDB Atlas account (or other MongoDB provider)
+
+### Deployment Steps
+
+1. **Login to Fly.io**
+
+```bash
+fly auth login
+```
+
+2. **Initialize the App (First time only)**
+
+```bash
+fly launch
+```
+
+This will create a new app on Fly.io. You can use existing configuration.
+
+3. **Set Up Environment Variables**
+
+Create a `secrets.toml` file from the example:
+
+```bash
+cp secrets.example.toml secrets.toml
+```
+
+Edit `secrets.toml` with your actual MongoDB connection details and other secrets.
+
+4. **Import Secrets**
+
+```bash
+fly secrets import --app pokersettle < secrets.toml
+```
+
+5. **Create Volume (First time only)**
+
+```bash
+fly volumes create pokersettle_data --size 1
+```
+
+6. **Deploy the Application**
+
+```bash
+fly deploy
+```
+
+7. **Monitor the Deployment**
+
+```bash
+fly status
+fly logs
+```
+
+8. **Open the Application**
+
+```bash
+fly open
+```
+
+## Local Development
+
+1. **Clone the repository**
+
+```bash
+git clone https://github.com/yourusername/pokergame.git
+cd pokergame
+```
+
+2. **Set up a virtual environment**
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. **Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+4. **Set environment variables**
+
+Create a `.env` file from the example:
+
+```bash
+cp .env.example .env
+# Edit .env with your actual values
+```
+
+Key environment variables include:
+- `MONGO_URI`: Your MongoDB connection string
+- `SECRET_KEY`: Secret key for session security
+- `ADMIN_PASSWORD`: Password for admin access
+
+5. **Run the application**
+
+```bash
+python app.py
+```
+
+The application will be available at http://localhost:5000
+
+## Secrets Management
+
+This application uses a centralized secrets management approach:
+
+1. **Local Development**: Secrets are stored in a `.env` file
+2. **Production/Fly.io**: Secrets are managed using Fly.io's secrets mechanism
+
+### Adding New Secrets
+
+If you need to add a new configuration value or secret:
+
+1. Add it to `utils/config.py`
+2. Update `.env.example` and `secrets.example.toml`
+3. Update your local `.env` and server secrets
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 # Poker Settle
 
 A web application for managing poker games and calculating settlements between players.

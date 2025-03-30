@@ -3,7 +3,7 @@ FROM python:3.9-slim AS builder
 WORKDIR /app
 
 # Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends gcc
+RUN apt-get update && apt-get install -y --no-install-recommends gcc curl
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,6 +19,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 FROM python:3.9-slim
 
 WORKDIR /app
+
+# Install curl for healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends curl && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -42,7 +45,7 @@ USER appuser
 
 # Set up healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:${PORT}/health || exit 1
+  CMD curl -f http://localhost:${PORT}/healthcheck || exit 1
 
 # Run the application with optimized settings for low memory usage
 CMD gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 60 'app:app'

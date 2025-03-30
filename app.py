@@ -1,5 +1,11 @@
-from flask import Flask, redirect, url_for, jsonify
+from flask import Flask, redirect, url_for, jsonify, current_app
 import os
+import logging
+from load_env import load_dotenv
+
+# Load environment variables from .env file in development
+if os.environ.get('APP_ENV', 'development') == 'development':
+    load_dotenv()
 
 # Import models
 from models.user import UserModel
@@ -14,13 +20,33 @@ from routes.admin import admin_bp, init_routes as init_admin_routes
 
 # Import utilities
 from utils.mongodb import get_mongodb_client
+from utils.analytics import Analytics
+from utils.settings import Settings
+from utils.logger import Logger
+from utils.config import *
 
 def create_app():
     """
     Factory function to create Flask app with all dependencies.
     """
     app = Flask(__name__)
-    app.secret_key = os.environ.get('SECRET_KEY', 'default-secret-key')
+    
+    # Configure app from our centralized config
+    app.secret_key = SECRET_KEY
+    app.config['SESSION_COOKIE_SECURE'] = SESSION_COOKIE_SECURE
+    app.config['SESSION_COOKIE_HTTPONLY'] = SESSION_COOKIE_HTTPONLY
+    app.config['SESSION_COOKIE_SAMESITE'] = SESSION_COOKIE_SAMESITE
+    
+    # Set up logging
+    if not app.debug:
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.INFO)
+        app.logger.addHandler(handler)
+    
+    # Validate config in production
+    warnings = validate_config()
+    for warning in warnings:
+        app.logger.warning(f"Configuration warning: {warning}")
     
     # Initialize MongoDB client
     mongo_client = get_mongodb_client()
@@ -57,4 +83,4 @@ def create_app():
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=PORT, debug=DEBUG)
