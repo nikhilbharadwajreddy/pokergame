@@ -5,6 +5,7 @@ from load_env import load_dotenv
 
 # Load environment variables from .env file in development
 if os.environ.get('APP_ENV', 'development') == 'development':
+    # Use the local load_dotenv function
     load_dotenv()
 
 # Import models

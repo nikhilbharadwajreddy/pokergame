@@ -24,3 +24,12 @@ data/
 .vscode/
 *.swp
 *.swo
+
+# Unused files that should be removed
+templates/game_fixed.html
+static/css/apple.css
+.dockerignore
+Dockerfile
+Procfile
+data/user_1234.json
+data/user_12345678.json

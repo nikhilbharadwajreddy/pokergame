@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: pokersettle
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn 'app:app' --bind=0.0.0.0:$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHONUNBUFFERED
+        value: 1
+      - key: DATA_DIR
+        value: /data
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: MONGO_URI
+        sync: false
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
