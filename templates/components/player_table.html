@@ -1,0 +1,65 @@
+{% macro render_player_table(game) %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4>Players</h4>
+        <button id="calculate-settlement" class="btn btn-success">
+            <i class="bi bi-calculator"></i> Calculate Settlement
+        </button>
+    </div>
+    <div class="card-body">
+        {% if game.players %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                        <th style="min-width: 100px;">Player</th>
+                        <th style="min-width: 120px;">Group</th>
+                        <th style="min-width: 150px;">Buy-in</th>
+                        <th style="min-width: 100px;">Final</th>
+                        <th style="min-width: 100px;">Profit/Loss</th>
+                            <th style="min-width: 50px;">Actions</th>
+                </tr>
+                    </thead>
+                    <tbody>
+                        {% for player in game.players %}
+                            <tr>
+                                <td class="align-middle">{{ player.name }}</td>
+                                <td>
+                                    <select class="form-select form-select-sm group-select" data-player="{{ player.name }}">
+                                        <option value="" {% if not player.group %}selected{% endif %}>No Group</option>
+                                        {% for group in game.groups %}
+                                            <option value="{{ group }}" {% if player.group == group %}selected{% endif %}>{{ group }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                <button class="btn btn-outline-secondary decrease-buy-in" data-player="{{ player.name }}"><i class="bi bi-dash"></i></button>
+                                        <input type="number" class="form-control buy-in-value" step="0.01" value="{{ player.buy_in }}" data-player="{{ player.name }}">
+                                <button class="btn btn-outline-secondary increase-buy-in" data-player="{{ player.name }}"><i class="bi bi-plus"></i></button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control form-control-sm final-amount" step="0.01" value="{{ player.final_amount }}" data-player="{{ player.name }}">
+                                </td>
+                                <td class="{{ 'profit' if player.final_amount > player.buy_in else 'loss' if player.final_amount < player.buy_in else '' }}">
+                                    ${{ '%0.2f'|format(player.final_amount - player.buy_in) }}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-danger remove-player" data-player="{{ player.name }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                No players added yet. Add players using the form on the left.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,28 @@
+# fly.toml app configuration file generated for pokersettle
+app = "pokersettle"
+primary_region = "ord"
+
+[build]
+  builder = "paketobuildpacks/builder:base"
+
+[env]
+  PORT = "8080"
+  PYTHONUNBUFFERED = "1"
+  PYTHONPATH = "/app"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+  # Free tier limits
+  memory = 256
+  cpu_kind = "shared"
+  cpus = 1
+
+[mounts]
+  source = "pokersettle_data"
+  destination = "/data"
+  capacity = 1

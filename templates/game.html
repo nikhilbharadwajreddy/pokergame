@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% from "components/player_form.html" import render_player_form %}
+{% from "components/group_form.html" import render_group_form %}
+{% from "components/player_table.html" import render_player_table %}
+
+{% block head %}
+    <!-- Apple design system -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/apple.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% endblock %}
+{% block title %}Poker Settle - Game{% endblock %}
+
+{% block header %}
+    {% include "components/header.html" %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        {{ render_player_form(game) }}
+        {{ render_group_form(game) }}
+    </div>
+    
+    <div class="col-md-9">
+        {{ render_player_table(game) }}
+    </div>
+</div>
+
+<!-- Settlement Results Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div id="settlementResults" class="settlement-section" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Settlement Results</h4>
+                    <div id="settlementDate" class="settlement-date"></div>
+                </div>
+                <div class="card-body">
+                    <h5>Player Results</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Group</th>
+                                    <th>Buy-in</th>
+                                    <th>Final</th>
+                                    <th>Profit/Loss</th>
+                                </tr>
+                            </thead>
+                            <tbody id="playerResults">
+                                <!-- Player results will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h5>Group Summary</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Group</th>
+                                    <th>Initial</th>
+                                    <th>Final</th>
+                                    <th>Game Net</th>
+                                    <th>Settlement</th>
+                                </tr>
+                            </thead>
+                            <tbody id="groupResults">
+                                <!-- Group results will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h5>Payments</h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Amount</th>
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentResults">
+                                <!-- Payment results will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="settlement-credit text-center mt-4">
+                        Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!
+                    </div>
+                    <div class="text-end mt-3">
+                        <button id="exportSettlement" class="btn btn-primary">
+                            <i class="bi bi-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="{{ url_for('static', filename='js/game.js') }}"></script>
+<script src="{{ url_for('static', filename='js/settlement.js') }}"></script>
+{% endblock %}

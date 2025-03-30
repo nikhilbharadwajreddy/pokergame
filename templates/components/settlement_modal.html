@@ -1,0 +1,24 @@
+{% macro render_settlement_modal() %}
+<div id="settlementModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Settlement</h2>
+      <span id="settlementDate"></span>
+    </div>
+    
+    <div class="modal-body">
+      <div id="playerResults"></div>
+      <div id="paymentResults"></div>
+    </div>
+    
+    <div class="modal-credit">
+      Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!
+    </div>
+    
+    <div class="modal-footer">
+      <button id="closeSettlement">Close</button>
+      <button id="exportSettlement">Export</button>
+    </div>
+  </div>
+</div>
+{% endmacro %}

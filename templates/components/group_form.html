@@ -1,0 +1,24 @@
+{% macro render_group_form(game) %}
+<div class="card mb-3">
+    <div class="collapsible-header" id="addGroupHeader">
+        <h5 class="mb-0">Add Group</h5>
+        <i class="bi bi-chevron-down collapse-icon"></i>
+    </div>
+    <div class="collapsible-content" id="addGroupContent">
+        <div class="card-body">
+            <form action="/add_group" method="post">
+                <input type="hidden" name="game_id" value="{{ game.game_id }}">
+                <div class="mb-3">
+                    <label for="group_name" class="form-label">Group Name</label>
+                    <input type="text" class="form-control" id="group_name" name="group_name" required>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-collection"></i> Add Group
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Settle - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            padding-top: 80px;
+            font-family: 'Inter', sans-serif;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: none;
+            overflow: hidden;
+        }
+        .card-header {
+            background: #4A6FFF;
+            color: white;
+            text-align: center;
+            padding: 25px 15px;
+            border-bottom: none;
+        }
+        .card-header h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 24px;
+        }
+        .card-body {
+            padding: 25px;
+        }
+        .form-control {
+            background-color: #fff;
+            border: 1px solid #e2e8f0;
+            color: #212529;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            height: auto;
+        }
+        .form-control:focus {
+            border-color: #4A6FFF;
+            box-shadow: 0 0 0 0.25rem rgba(74, 111, 255, 0.25);
+        }
+        .form-text {
+            color: #6c757d;
+        }
+        .btn-primary {
+            background: #4A6FFF;
+            border: none;
+            padding: 10px 15px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #3d5ce5;
+            transform: translateY(-1px);
+        }
+        .alert {
+            border-radius: 6px;
+            border: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .bi {
+            margin-right: 4px;
+        }
+        
+        @media (max-width: 767px) {
+            body {
+                padding-top: 40px;
+            }
+            .login-container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .card-header h3 {
+                font-size: 1.5rem;
+            }
+            .form-control, .form-select, .btn {
+                font-size: 16px; /* Prevents iOS zoom on focus */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="bi bi-currency-exchange"></i> Poker Settle</h3>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <form action="/login" method="post">
+                        <div class="mb-3">
+                            <label for="user_id" class="form-label">User ID</label>
+                            <input type="text" class="form-control" id="user_id" name="user_id" placeholder="Create a unique ID" required>
+                            <div class="form-text">Create a unique ID you'll remember for future logins.</div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Login / Create Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

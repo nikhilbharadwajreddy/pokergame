@@ -1,0 +1,284 @@
+/* Minimal Settlement Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(3px);
+}
+
+.settlement-modal {
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    animation: modal-appear 0.3s ease;
+    color: #333333;
+    font-family: 'Inter', sans-serif;
+}
+
+@keyframes modal-appear {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.settlement-header {
+    background: #ffffff;
+    color: #333333;
+    padding: 20px 24px;
+    position: relative;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settlement-header h4 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #222222;
+}
+
+.settlement-date {
+    margin: 4px 0 0 0;
+    font-size: 0.875rem;
+    color: #666666;
+    font-weight: 400;
+}
+
+.settlement-body {
+    padding: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: #ffffff;
+    scrollbar-width: thin;
+}
+
+.settlement-body::-webkit-scrollbar {
+    width: 4px;
+}
+
+.settlement-body::-webkit-scrollbar-track {
+    background: #f5f5f5;
+}
+
+.settlement-body::-webkit-scrollbar-thumb {
+    background-color: #d1d1d1;
+    border-radius: 20px;
+}
+
+.settlement-section {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settlement-section:last-child {
+    border-bottom: none;
+}
+
+.settlement-section-title {
+    margin: 0;
+    padding: 14px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4A6FFF;
+    background-color: #f8f9ff;
+    letter-spacing: 0.2px;
+}
+
+.settlement-items {
+    padding: 10px 16px;
+}
+
+.settlement-item {
+    padding: 12px 16px;
+    margin: 8px 0;
+    background-color: #ffffff;
+    border-radius: 10px;
+    font-weight: 400;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.settlement-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+.pay-amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #4A6FFF;
+    font-size: 0.85rem;
+}
+
+.profit-amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #10b981;
+    font-size: 0.85rem;
+}
+
+.loss-amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #ef4444;
+    font-size: 0.85rem;
+}
+
+.player-name {
+    font-weight: 500;
+    color: #222222;
+    padding: 5px 0;
+}
+
+.player-group {
+    color: #666666;
+    font-size: 0.8rem;
+    margin-left: 8px;
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 12px;
+}
+
+.arrow-icon {
+    margin: 0 12px;
+    color: #4A6FFF;
+    font-weight: bold;
+}
+
+.settlement-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 20px;
+    background-color: #ffffff;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-close-settlement {
+    background-color: #f5f5f5;
+    color: #333333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.btn-close-settlement:hover {
+    background-color: #eeeeee;
+}
+
+.btn-export-settlement {
+    background-color: #4A6FFF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-export-settlement:hover {
+    background-color: #3d5ce5;
+    transform: translateY(-1px);
+}
+
+.no-payments {
+    color: #666666;
+    font-style: italic;
+    padding: 12px;
+    text-align: center;
+    background-color: #f9f9fa;
+    border-radius: 10px;
+    margin: 8px 0;
+    font-size: 0.875rem;
+}
+
+/* Add player results styles */
+.player-group {
+    color: #666666;
+    font-size: 0.8rem;
+    margin-left: 8px;
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 12px;
+}
+
+.profit-amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #10b981;
+    font-size: 0.85rem;
+}
+
+.loss-amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #ef4444;
+    font-size: 0.85rem;
+}
+
+/* Export styling - ensure the credit line is included */
+.exporting {
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15) !important;
+    max-height: none !important;
+    border: 1px solid #f0f0f0;
+}
+
+.exporting .settlement-body {
+    max-height: none !important;
+}
+
+.export-watermark {
+    text-align: center;
+    color: #aaaaaa;
+    font-size: 10px;
+    margin-top: 16px;
+    opacity: 0.7;
+}
+
+/* Group header */
+.group-header {
+    margin: 10px 0 5px 0;
+    padding: 8px 16px;
+    background-color: #f8f9ff;
+    border-radius: 8px;
+}
+
+.group-name {
+    margin: 0;
+    color: #4A6FFF;
+    font-size: 0.9rem;
+    font-weight: 600;
+}

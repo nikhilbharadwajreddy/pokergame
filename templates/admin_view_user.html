@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Settle - View User Data</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            padding-top: 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        .card {
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            background-color: #fff;
+            border: none;
+        }
+        .card-header {
+            background-color: #fff;
+            color: #212529;
+            border-radius: 8px 8px 0 0 !important;
+            border-bottom: 1px solid #f1f1f1;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .admin-header {
+            background: #4A6FFF;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: #4A6FFF;
+            border: none;
+            transition: all 0.2s ease;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background: #3d5ce5;
+            transform: translateY(-1px);
+        }
+        .btn-outline-light {
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-light:hover {
+            transform: translateY(-1px);
+        }
+        .table {
+            color: #212529;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(74, 111, 255, 0.05);
+        }
+        pre {
+            background-color: #f1f5f9;
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 600px;
+            overflow: auto;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px 0;
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .bi {
+            margin-right: 4px;
+        }
+        
+        @media (max-width: 767px) {
+            .container {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            .admin-header h2 {
+                font-size: 1.5rem;
+            }
+            .admin-header .col-md-4 {
+                margin-top: 15px;
+                text-align: left !important;
+            }
+            .table {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="admin-header">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2><i class="bi bi-person"></i> User: {{ user_id }}</h2>
+                    <p class="mb-0">View detailed user data</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/admin" class="btn btn-outline-light">
+                        <i class="bi bi-arrow-left"></i> Back to Admin
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="bi bi-people"></i> Players</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if user_data.players %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for player in user_data.players %}
+                                            <tr>
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ player.name }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                No players found.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4><i class="bi bi-collection"></i> Groups</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if user_data.groups %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for group in user_data.groups %}
+                                            <tr>
+                                                <td>{{ loop.index }}</td>
+                                                <td>{{ group }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                No groups found.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-controller"></i> Games</h4>
+            </div>
+            <div class="card-body">
+                {% if user_data.games %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Game ID</th>
+                                    <th>Name</th>
+                                    <th>Created</th>
+                                    <th>Players</th>
+                                    <th>Groups</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for game in user_data.games %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td><small>{{ game.game_id }}</small></td>
+                                        <td>{{ game.game_name }}</td>
+                                        <td>{{ game.date_created }}</td>
+                                        <td>{{ game.players|length }}</td>
+                                        <td>{{ game.groups|length }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No games found.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="bi bi-code-slash"></i> Raw Data (JSON)</h4>
+            </div>
+            <div class="card-body">
+                <pre><code>{{ user_data|tojson(indent=2) }}</code></pre>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!</p>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

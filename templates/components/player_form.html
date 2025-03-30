@@ -1,0 +1,33 @@
+{% macro render_player_form(game) %}
+<div class="card mb-3">
+    <div class="collapsible-header" id="addPlayerHeader">
+        <h5 class="mb-0">Add Player</h5>
+        <i class="bi bi-chevron-down collapse-icon"></i>
+    </div>
+    <div class="collapsible-content" id="addPlayerContent">
+        <div class="card-body">
+            <form action="/add_player" method="post">
+                <input type="hidden" name="game_id" value="{{ game.game_id }}">
+                <div class="mb-3">
+                    <label for="player_name" class="form-label">Player Name</label>
+                    <input type="text" class="form-control" id="player_name" name="player_name" required>
+                </div>
+                <div class="mb-3">
+                    <label for="group_name" class="form-label">Group</label>
+                    <select class="form-select" id="group_name" name="group_name">
+                        <option value="">No Group</option>
+                        {% for group in game.groups %}
+                            <option value="{{ group }}">{{ group }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-person-plus"></i> Add Player
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endmacro %}

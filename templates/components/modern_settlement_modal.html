@@ -1,0 +1,494 @@
+{% macro render_modern_settlement_modal() %}
+<!-- Modern Settlement Modal using Material Components for the Web (MCP) -->
+<div id="settlementModalMCP" class="mdc-dialog" role="dialog" aria-modal="true" aria-labelledby="settlementModalLabel">
+  <div class="mdc-dialog__container">
+    <div class="mdc-dialog__surface">
+      <!-- Modal Header -->
+      <h2 class="mdc-dialog__title" id="settlementModalLabel">Settlement Results</h2>
+      <p class="settlement-date-mcp" id="settlementDateMCP"></p>
+      
+      <!-- Modal Content -->
+      <div class="mdc-dialog__content">
+        <!-- Player Results Summary Section -->
+        <div class="settlement-section-mcp">
+          <h5 class="settlement-section-title-mcp">Player Results</h5>
+          <div class="settlement-items-mcp" id="playerResultsMCP"></div>
+        </div>
+        
+        <!-- Group-to-Group Payments Section -->
+        <div class="settlement-section-mcp">
+          <h5 class="settlement-section-title-mcp">Group-to-Group Payments</h5>
+          <div class="settlement-items-mcp" id="groupSettlementsMCP"></div>
+        </div>
+        
+        <!-- Internal Group Payments Section -->
+        <div class="settlement-section-mcp">
+          <h5 class="settlement-section-title-mcp">Internal Group Payments</h5>
+          <div class="settlement-items-mcp" id="internalSettlementsMCP"></div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="mdc-dialog__actions">
+        <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="close">
+          <span class="mdc-button__label">Close</span>
+        </button>
+        <button type="button" class="mdc-button mdc-button--raised mdc-dialog__button" id="exportSettlementMCP">
+          <i class="material-icons mdc-button__icon">download</i>
+          <span class="mdc-button__label">Export</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="mdc-dialog__scrim"></div>
+</div>
+
+<!-- Additional CSS for MCP Settlement Modal -->
+<style>
+  /* Modern Settlement Modal Styles */
+  .mdc-dialog__surface {
+    border-radius: 16px !important;
+    max-width: 500px !important;
+    width: 90% !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12) !important;
+    color: #333333;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .mdc-dialog__title {
+    color: #222222;
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 20px 24px 0;
+    margin: 0;
+  }
+  
+  .settlement-date-mcp {
+    color: #666666;
+    font-size: 0.875rem;
+    margin: 4px 0 0 0;
+    padding: 0 24px;
+  }
+  
+  .mdc-dialog__content {
+    padding: 0 !important;
+    max-height: 65vh;
+    overflow-y: auto;
+    color: #333333;
+  }
+  
+  .settlement-section-mcp {
+    border-bottom: 1px solid #f0f0f0;
+    margin-top: 16px;
+  }
+  
+  .settlement-section-mcp:last-child {
+    border-bottom: none;
+  }
+  
+  .settlement-section-title-mcp {
+    margin: 0;
+    padding: 14px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #4A6FFF;
+    background-color: #f8f9ff;
+    letter-spacing: 0.2px;
+  }
+  
+  .settlement-items-mcp {
+    padding: 10px 16px;
+  }
+  
+  .settlement-item-mcp {
+    padding: 12px 16px;
+    margin: 8px 0;
+    background-color: #ffffff;
+    border-radius: 10px;
+    font-weight: 400;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    font-size: 0.95rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  
+  .settlement-item-mcp:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.06);
+  }
+  
+  .pay-amount-mcp {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #4A6FFF;
+    font-size: 0.85rem;
+  }
+  
+  .profit-amount-mcp {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #10b981;
+    font-size: 0.85rem;
+  }
+  
+  .loss-amount-mcp {
+    margin-left: auto;
+    font-weight: 600;
+    color: #ffffff;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: #ef4444;
+    font-size: 0.85rem;
+  }
+  
+  .player-name-mcp {
+    font-weight: 500;
+    color: #222222;
+    padding: 5px 0;
+  }
+  
+  .player-group-mcp {
+    color: #666666;
+    font-size: 0.8rem;
+    margin-left: 8px;
+    background-color: #f5f5f5;
+    padding: 2px 6px;
+    border-radius: 12px;
+  }
+  
+  .arrow-icon-mcp {
+    margin: 0 12px;
+    color: #4A6FFF;
+    font-weight: bold;
+  }
+  
+  .mdc-dialog__actions {
+    padding: 14px 20px;
+    border-top: 1px solid #f0f0f0;
+    justify-content: space-between;
+  }
+  
+  .mdc-button {
+    border-radius: 24px !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    letter-spacing: 0.0892857143em;
+    text-transform: none;
+  }
+  
+  .mdc-button--raised {
+    background-color: #4A6FFF !important;
+    color: white !important;
+  }
+  
+  .mdc-button--raised:hover {
+    background-color: #3d5ce5 !important;
+    transform: translateY(-1px);
+  }
+  
+  .no-payments-mcp {
+    color: #666666;
+    font-style: italic;
+    padding: 12px;
+    text-align: center;
+    background-color: #f9f9fa;
+    border-radius: 10px;
+    margin: 8px 0;
+    font-size: 0.875rem;
+  }
+  
+  /* Export styling */
+  .exporting-mcp {
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15) !important;
+    max-height: none !important;
+    border: 1px solid #f0f0f0;
+  }
+  
+  .exporting-mcp .mdc-dialog__content {
+    max-height: none !important;
+  }
+  
+  .export-watermark-mcp {
+    text-align: center;
+    color: #aaaaaa;
+    font-size: 10px;
+    margin-top: 16px;
+    opacity: 0.7;
+  }
+  
+  @media (max-width: 767px) {
+    .mdc-dialog__surface {
+      width: 95% !important;
+    }
+  }
+</style>
+
+<script>
+  // JavaScript to be included in the document
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize the Material Dialog
+    const dialog = document.querySelector('#settlementModalMCP');
+    const exportBtn = document.getElementById('exportSettlementMCP');
+    
+    if (dialog) {
+      const mdcDialog = mdc.dialog.MDCDialog.attachTo(dialog);
+      
+      // Handle close event
+      dialog.addEventListener('MDCDialog:closed', function(event) {
+        console.log('Dialog closed');
+      });
+      
+      // Handle export button click
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+          exportSettlementAsImageMCP();
+        });
+      }
+      
+      // Replace the old displaySettlement function call
+      // This will be called instead of the old one
+      window.displaySettlementMCP = function(result) {
+        // Same functionality as displaySettlement but with MCP classes
+        displaySettlementInMCP(result, mdcDialog);
+      };
+    }
+  });
+  
+  // Function to display settlement in MCP dialog
+  function displaySettlementInMCP(result, mdcDialog) {
+    // Prepare HTML for all sections
+    let playerResultsHtml = '';
+    let groupToGroupHtml = '';
+    let internalGroupHtml = '';
+    
+    // Format date in a modern style
+    const now = new Date();
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const formattedDate = `${days[now.getDay()].substring(0, 3)}, ${months[now.getMonth()].substring(0, 3)} ${now.getDate()}, ${now.getFullYear()}`;
+    
+    // Set settlement date in modal
+    document.getElementById('settlementDateMCP').textContent = formattedDate;
+    
+    // Get game title
+    let gameTitle = document.querySelector('meta[name="game-name"]')?.content || 'Poker Game';
+    if (gameTitle === 'Game') {
+      gameTitle = `Poker Game - ${formattedDate}`;
+    }
+    
+    // Collect player data
+    const players = {};
+    const playerGroups = {};
+    
+    // First, organize internal settlements by group
+    const internalByGroup = {};
+    
+    if (result.internal_settlements && result.internal_settlements.length > 0) {
+      result.internal_settlements.forEach(settlement => {
+        // Try to extract group name from the note
+        let groupName = 'Ungrouped';
+        if (settlement.note) {
+          const match = settlement.note.match(/Group: ([^\s-]+)/);
+          if (match && match[1]) {
+            groupName = match[1];
+          }
+        }
+        
+        // Initialize group if not exists
+        if (!internalByGroup[groupName]) {
+          internalByGroup[groupName] = [];
+        }
+        
+        // Add settlement to group
+        internalByGroup[groupName].push(settlement);
+        
+        // Record player groups
+        playerGroups[settlement.from] = groupName;
+        playerGroups[settlement.to] = groupName;
+        
+        // Initialize players if not exists
+        if (!players[settlement.from]) {
+          players[settlement.from] = { name: settlement.from, profitLoss: 0, group: groupName };
+        }
+        if (!players[settlement.to]) {
+          players[settlement.to] = { name: settlement.to, profitLoss: 0, group: groupName };
+        }
+      });
+    }
+    
+    // Add group-to-group settlements
+    if (result.group_settlements && result.group_settlements.length > 0) {
+      result.group_settlements.forEach(settlement => {
+        // Format amount
+        const formattedAmount = parseFloat(settlement.amount).toFixed(2);
+        
+        // Create item HTML with dollar sign
+        groupToGroupHtml += `
+          <div class="settlement-item-mcp">
+            <span class="player-name-mcp">${settlement.from}</span>
+            <span class="arrow-icon-mcp">→</span>
+            <span class="player-name-mcp">${settlement.to}</span>
+            <span class="pay-amount-mcp">$${formattedAmount}</span>
+          </div>
+        `;
+        
+        // Extract group information
+        if (settlement.note) {
+          const match = settlement.note.match(/Group Settlement: ([^\s]+) → ([^\s]+)/);
+          if (match && match[1] && match[2]) {
+            playerGroups[settlement.from] = match[1];
+            playerGroups[settlement.to] = match[2];
+          }
+        }
+        
+        // Initialize players if not exists
+        if (!players[settlement.from]) {
+          players[settlement.from] = { name: settlement.from, profitLoss: -parseFloat(settlement.amount), group: playerGroups[settlement.from] || 'Unknown' };
+        } else {
+          players[settlement.from].profitLoss -= parseFloat(settlement.amount);
+        }
+        
+        if (!players[settlement.to]) {
+          players[settlement.to] = { name: settlement.to, profitLoss: parseFloat(settlement.amount), group: playerGroups[settlement.to] || 'Unknown' };
+        } else {
+          players[settlement.to].profitLoss += parseFloat(settlement.amount);
+        }
+      });
+    }
+    
+    // Add internal settlements organized by group
+    const groupNames = Object.keys(internalByGroup).sort();
+    
+    if (groupNames.length > 0) {
+      groupNames.forEach(groupName => {
+        const groupSettlements = internalByGroup[groupName];
+        
+        // Add group header
+        internalGroupHtml += `
+          <div class="group-header">
+            <h6 class="group-name">${groupName}</h6>
+          </div>
+        `;
+        
+        // Add settlements for this group
+        groupSettlements.forEach(settlement => {
+          const formattedAmount = parseFloat(settlement.amount).toFixed(2);
+          
+          internalGroupHtml += `
+            <div class="settlement-item-mcp">
+              <span class="player-name-mcp">${settlement.from}</span>
+              <span class="arrow-icon-mcp">→</span>
+              <span class="player-name-mcp">${settlement.to}</span>
+              <span class="pay-amount-mcp">$${formattedAmount}</span>
+            </div>
+          `;
+          
+          // Update player profits/losses
+          if (!players[settlement.from]) {
+            players[settlement.from] = { name: settlement.from, profitLoss: -parseFloat(settlement.amount), group: groupName };
+          } else {
+            players[settlement.from].profitLoss -= parseFloat(settlement.amount);
+          }
+          
+          if (!players[settlement.to]) {
+            players[settlement.to] = { name: settlement.to, profitLoss: parseFloat(settlement.amount), group: groupName };
+          } else {
+            players[settlement.to].profitLoss += parseFloat(settlement.amount);
+          }
+        });
+      });
+    }
+    
+    // Generate player results HTML
+    const playersList = Object.values(players);
+    
+    // Sort players by profit/loss (highest profit first)
+    playersList.sort((a, b) => b.profitLoss - a.profitLoss);
+    
+    playersList.forEach(player => {
+      const formattedAmount = Math.abs(player.profitLoss).toFixed(2);
+      const isProfit = player.profitLoss >= 0;
+      
+      playerResultsHtml += `
+        <div class="settlement-item-mcp">
+          <span class="player-name-mcp">${player.name}</span>
+          <span class="player-group-mcp">${player.group || 'Ungrouped'}</span>
+          <span class="${isProfit ? 'profit-amount-mcp' : 'loss-amount-mcp'}">
+            ${isProfit ? '+' : '-'}$${formattedAmount}
+          </span>
+        </div>
+      `;
+    });
+    
+    // Check if we have any payments in each section
+    if (!playerResultsHtml) {
+      playerResultsHtml = '<div class="no-payments-mcp">No player results available.</div>';
+    }
+    
+    if (!groupToGroupHtml) {
+      groupToGroupHtml = '<div class="no-payments-mcp">No group-to-group payments required.</div>';
+    }
+    
+    if (!internalGroupHtml) {
+      internalGroupHtml = '<div class="no-payments-mcp">No internal group payments required.</div>';
+    }
+    
+    // Update the modal content
+    document.getElementById('playerResultsMCP').innerHTML = playerResultsHtml;
+    document.getElementById('groupSettlementsMCP').innerHTML = groupToGroupHtml;
+    document.getElementById('internalSettlementsMCP').innerHTML = internalGroupHtml;
+    
+    // Show the dialog
+    mdcDialog.open();
+  }
+  
+  // Function to export settlement as image
+  function exportSettlementAsImageMCP() {
+    const modal = document.querySelector('.mdc-dialog__surface');
+    const gameTitle = document.querySelector('meta[name="game-name"]')?.content?.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() || 'poker-game';
+    
+    // Temporarily add a class for better export styling
+    modal.classList.add('exporting-mcp');
+    
+    // Add watermark
+    const watermark = document.createElement('div');
+    watermark.className = 'export-watermark-mcp';
+    watermark.innerHTML = 'Generated by PokerSettle';
+    modal.appendChild(watermark);
+    
+    html2canvas(modal, { 
+      backgroundColor: '#ffffff',
+      scale: 2, // Higher quality
+      logging: false,
+      useCORS: true
+    }).then(canvas => {
+      // Create image and force download
+      const image = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image;
+      downloadLink.download = `settlements-${gameTitle}.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      
+      // Clean up
+      document.body.removeChild(downloadLink);
+      modal.removeChild(watermark);
+      modal.classList.remove('exporting-mcp');
+    }).catch(err => {
+      console.error('Error creating image:', err);
+      alert('Error creating settlement image. Please try again.');
+      modal.removeChild(watermark);
+      modal.classList.remove('exporting-mcp');
+    });
+  }
+</script>
+{% endmacro %}

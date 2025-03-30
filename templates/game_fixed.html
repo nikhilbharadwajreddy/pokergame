@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Settle - Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <style>
+        /* All styles remain the same - omitted for brevity */
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="container-fluid px-3 mb-4 mt-2">
+            <a href="/dashboard" class="btn btn-link text-dark p-0">
+                <i class="bi bi-chevron-left fs-4"></i>
+            </a>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <div class="collapsible-header" id="addPlayerHeader">
+                        <h5 class="mb-0">Add Player</h5>
+                        <i class="bi bi-chevron-down collapse-icon"></i>
+                    </div>
+                    <div class="collapsible-content" id="addPlayerContent">
+                        <div class="card-body">
+                            <form action="/add_player" method="post">
+                                <input type="hidden" name="game_id" value="{{ game.game_id }}">
+                                <div class="mb-3">
+                                    <label for="player_name" class="form-label">Player Name</label>
+                                    <input type="text" class="form-control" id="player_name" name="player_name" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="group_name" class="form-label">Group</label>
+                                    <select class="form-select" id="group_name" name="group_name">
+                                        <option value="">No Group</option>
+                                        {% for group in game.groups %}
+                                            <option value="{{ group }}">{{ group }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-person-plus"></i> Add Player
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mb-3">
+                    <div class="collapsible-header" id="addGroupHeader">
+                        <h5 class="mb-0">Add Group</h5>
+                        <i class="bi bi-chevron-down collapse-icon"></i>
+                    </div>
+                    <div class="collapsible-content" id="addGroupContent">
+                        <div class="card-body">
+                            <form action="/add_group" method="post">
+                                <input type="hidden" name="game_id" value="{{ game.game_id }}">
+                                <div class="mb-3">
+                                    <label for="group_name" class="form-label">Group Name</label>
+                                    <input type="text" class="form-control" id="group_name" name="group_name" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-collection"></i> Add Group
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Players</h4>
+                        <button id="calculate-settlement" class="btn btn-success">
+                            <i class="bi bi-calculator"></i> Calculate Settlement
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {% if game.players %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 100px;">Player</th>
+                                            <th style="min-width: 120px;">Group</th>
+                                            <th style="min-width: 150px;">Buy-in</th>
+                                            <th style="min-width: 100px;">Final</th>
+                                            <th style="min-width: 100px;">Profit/Loss</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for player in game.players %}
+                                            <tr>
+                                                <td class="align-middle">{{ player.name }}</td>
+                                                <td>
+                                                    <select class="form-select form-select-sm group-select" data-player="{{ player.name }}">
+                                                        <option value="" {% if not player.group %}selected{% endif %}>No Group</option>
+                                                        {% for group in game.groups %}
+                                                            <option value="{{ group }}" {% if player.group == group %}selected{% endif %}>{{ group }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <div class="input-group input-group-sm">
+                                                <button class="btn btn-outline-secondary decrease-buy-in" data-player="{{ player.name }}"><i class="bi bi-dash"></i></button>
+                                                        <input type="number" class="form-control buy-in-value" step="0.01" value="{{ player.buy_in }}" data-player="{{ player.name }}">
+                                                <button class="btn btn-outline-secondary increase-buy-in" data-player="{{ player.name }}"><i class="bi bi-plus"></i></button>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input type="number" class="form-control form-control-sm final-amount" step="0.01" value="{{ player.final_amount }}" data-player="{{ player.name }}">
+                                                </td>
+                                                <td class="{{ 'profit' if player.final_amount > player.buy_in else 'loss' if player.final_amount < player.buy_in else '' }}">
+                                                    ${{ '%0.2f'|format(player.final_amount - player.buy_in) }}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                No players added yet. Add players using the form on the left.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!</p>
+    </div>
+
+    <!-- Settlement Modal (hidden) -->
+    <div id="settlementModal" class="modal-overlay" style="display: none;">
+        <div class="settlement-modal">
+            <div class="settlement-header">
+                <h4 id="settlementTitle">Settlement Results</h4>
+                <p class="settlement-date" id="settlementDate"></p>
+            </div>
+            <div class="settlement-body">
+                <div class="settlement-sections">
+                    <div class="settlement-section">
+                        <h5 class="settlement-section-title">Group-to-Group Payments</h5>
+                        <p class="settlement-section-description">These payments settle balances between groups with positive and negative totals.</p>
+                        <div class="settlement-items" id="groupSettlements"></div>
+                    </div>
+                    <div class="settlement-section">
+                        <h5 class="settlement-section-title">Internal Group Payments</h5>
+                        <p class="settlement-section-description">These payments settle individual balances within each group after the group-level settlements.</p>
+                        <div class="settlement-items" id="internalSettlements"></div>
+                    </div>
+                </div>
+                <div class="settlement-credit">
+                    Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!
+                </div>
+            </div>
+            <div class="settlement-footer">
+                <button class="btn-close-settlement" id="closeSettlement">Close</button>
+                <button class="btn-export-settlement" id="exportSettlement">
+                    <i class="bi bi-download"></i> Export
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle collapsible sections
+            const headers = document.querySelectorAll('.collapsible-header');
+            
+            headers.forEach(header => {
+                const content = header.nextElementSibling;
+                content.style.maxHeight = content.scrollHeight + 'px';
+                
+                header.addEventListener('click', function() {
+                    const icon = this.querySelector('.collapse-icon');
+                    icon.classList.toggle('rotated');
+                    
+                    if (content.style.maxHeight !== '0px') {
+                        content.style.maxHeight = '0px';
+                        content.classList.add('collapsed');
+                    } else {
+                        content.style.maxHeight = content.scrollHeight + 'px';
+                        content.classList.remove('collapsed');
+                    }
+                });
+            });
+            
+            // Update player group
+            const groupSelects = document.querySelectorAll('.group-select');
+            
+            groupSelects.forEach(select => {
+                select.addEventListener('change', function() {
+                    const playerName = this.getAttribute('data-player');
+                    const groupName = this.value;
+                    
+                    updatePlayer(playerName, { group_name: groupName });
+                });
+            });
+            
+            // Buy-in buttons
+            const decreaseBtns = document.querySelectorAll('.decrease-buy-in');
+            const increaseBtns = document.querySelectorAll('.increase-buy-in');
+            
+            decreaseBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const playerName = this.getAttribute('data-player');
+                    const input = document.querySelector(`.buy-in-value[data-player="${playerName}"]`);
+                    let value = parseFloat(input.value);
+                    value = Math.max(0, value - 1);
+                    input.value = value;
+                    updatePlayer(playerName, { buy_in: value });
+                });
+            });
+            
+            increaseBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const playerName = this.getAttribute('data-player');
+                    const input = document.querySelector(`.buy-in-value[data-player="${playerName}"]`);
+                    let value = parseFloat(input.value);
+                    value += 1;
+                    input.value = value;
+                    updatePlayer(playerName, { buy_in: value });
+                });
+            });
+            
+            // Buy-in value change
+            const buyInInputs = document.querySelectorAll('.buy-in-value');
+            
+            buyInInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const playerName = this.getAttribute('data-player');
+                    const value = parseFloat(this.value);
+                    updatePlayer(playerName, { buy_in: value });
+                });
+            });
+            
+            // Final amount change
+            const finalAmtInputs = document.querySelectorAll('.final-amount');
+            
+            finalAmtInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const playerName = this.getAttribute('data-player');
+                    const value = parseFloat(this.value);
+                    updatePlayer(playerName, { final_amount: value });
+                });
+            });
+            
+            // Function to update player data
+            function updatePlayer(playerName, data) {
+                const formData = new FormData();
+                formData.append('game_id', '{{ game.game_id }}');
+                formData.append('player_name', playerName);
+                
+                if (data.group_name !== undefined) {
+                    formData.append('group_name', data.group_name);
+                }
+                
+                if (data.buy_in !== undefined) {
+                    formData.append('buy_in', data.buy_in);
+                }
+                
+                if (data.final_amount !== undefined) {
+                    formData.append('final_amount', data.final_amount);
+                }
+                
+                fetch('/update_player', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        console.error('Error updating player:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+            
+            // Calculate settlement functionality
+            document.getElementById('calculate-settlement').addEventListener('click', function() {
+                console.log('Calculate settlement button clicked');
+                calculateSettlement();
+            });
+            
+            // Settlement calculation function
+            function calculateSettlement() {
+                console.log('Calculating settlement for game ID:', '{{ game.game_id }}');
+                fetch(`/calculate_settlement?game_id={{ game.game_id }}`)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Settlement data:', data);
+                    if (data.success) {
+                        displaySettlement(data.result);
+                    } else {
+                        alert('Error calculating settlement: ' + (data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error calculating settlement');
+                });
+            }
+            
+            // Function to display settlement results
+            function displaySettlement(result) {
+                // Prepare HTML for both sections
+                let groupToGroupHtml = '';
+                let internalGroupHtml = '';
+                
+                // Format date in the modern style
+                const now = new Date();
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                const formattedDate = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+                
+                // Set settlement date in modal
+                document.getElementById('settlementDate').textContent = formattedDate;
+                
+                // Get game title
+                let gameTitle = '{{ game.game_name }}';
+                if (!gameTitle || gameTitle === 'Game') {
+                    gameTitle = `Poker Game - ${formattedDate}`;
+                }
+                
+                console.log('Processing settlements:', result);
+                
+                // Add group-to-group settlements
+                if (result.group_settlements && result.group_settlements.length > 0) {
+                    result.group_settlements.forEach(settlement => {
+                        // Format amount
+                        const formattedAmount = parseFloat(settlement.amount).toFixed(2);
+                        console.log('Group settlement:', settlement);
+                        
+                        // Create item HTML with dollar sign
+                        groupToGroupHtml += `
+                            <div class="settlement-item">
+                                <div class="settlement-row">
+                                    <span class="player-name">${settlement.from}</span>
+                                    <span class="arrow-icon">→</span>
+                                    <span class="player-name">${settlement.to}</span>
+                                    <span class="pay-amount">$${formattedAmount}</span>
+                                </div>
+                                ${settlement.note ? `<div class="settlement-note">${settlement.note}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Add internal settlements
+                if (result.internal_settlements && result.internal_settlements.length > 0) {
+                    result.internal_settlements.forEach(settlement => {
+                        // Format amount
+                        const formattedAmount = parseFloat(settlement.amount).toFixed(2);
+                        console.log('Internal settlement:', settlement);
+                        
+                        // Create item HTML with dollar sign
+                        internalGroupHtml += `
+                            <div class="settlement-item">
+                                <div class="settlement-row">
+                                    <span class="player-name">${settlement.from}</span>
+                                    <span class="arrow-icon">→</span>
+                                    <span class="player-name">${settlement.to}</span>
+                                    <span class="pay-amount">$${formattedAmount}</span>
+                                </div>
+                                ${settlement.note ? `<div class="settlement-note">${settlement.note}</div>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Check if we have any payments
+                if (!groupToGroupHtml) {
+                    groupToGroupHtml = '<div class="no-payments">No group-to-group payments required.</div>';
+                }
+                
+                if (!internalGroupHtml) {
+                    internalGroupHtml = '<div class="no-payments">No internal group payments required.</div>';
+                }
+                
+                // Update the modal content
+                document.getElementById('groupSettlements').innerHTML = groupToGroupHtml;
+                document.getElementById('internalSettlements').innerHTML = internalGroupHtml;
+                
+                // Show the modal
+                document.getElementById('settlementModal').style.display = 'flex';
+            }
+            
+            // Handle settlement modal close button
+            document.getElementById('closeSettlement').addEventListener('click', function() {
+                document.getElementById('settlementModal').style.display = 'none';
+            });
+            
+            // Handle settlement export button
+            document.getElementById('exportSettlement').addEventListener('click', function() {
+                exportSettlementAsImage();
+            });
+            
+            // Function to export settlement as image
+            function exportSettlementAsImage() {
+                const modal = document.querySelector('.settlement-modal');
+                const gameTitle = '{{ game.game_name }}'.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase() || 'poker-game';
+                
+                html2canvas(modal, { 
+                    backgroundColor: '#ffffff',
+                    scale: 2, // Higher quality
+                    logging: false,
+                    useCORS: true
+                }).then(canvas => {
+                    // Create image and force download
+                    const image = canvas.toDataURL('image/png');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = image;
+                    downloadLink.download = `settlement-${gameTitle}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    
+                    // Clean up
+                    document.body.removeChild(downloadLink);
+                }).catch(err => {
+                    console.error('Error creating image:', err);
+                    alert('Error creating settlement image. Please try again.');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

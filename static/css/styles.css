@@ -1,0 +1,506 @@
+/* Global styles */
+body {
+    background-color: #f8f9fa;
+    color: #212529;
+    padding-top: 20px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Card styles */
+.card {
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    background-color: #fff;
+    border: none;
+}
+
+.card-header {
+    background-color: #fff;
+    color: #212529;
+    border-radius: 8px 8px 0 0 !important;
+    border-bottom: 1px solid #f1f1f1;
+    padding: 15px 20px;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.game-header {
+    background: #4A6FFF;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Player styles */
+.player-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #fff;
+}
+
+.profit {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.loss {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Settlement styles */
+.settlement-item {
+    background-color: #f8fafc;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+}
+
+.settlement-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.settlement-note {
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 8px;
+    padding-top: 5px;
+    width: 100%;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.settlement-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: 1.05rem;
+}
+
+/* Group header in settlement */
+.group-header {
+    background-color: #f5f7ff;
+    padding: 10px 16px;
+    margin: 15px 0 8px 0;
+    border-radius: 6px;
+    border-left: 3px solid #4A6FFF;
+}
+
+.group-name {
+    color: #333333;
+    font-weight: 600;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Collapsible section styles */
+.collapsible-header {
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #f1f1f1;
+    border-radius: 8px 8px 0 0;
+}
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.collapsed {
+    max-height: 0;
+    padding: 0;
+    border: none;
+}
+
+.collapse-icon {
+    transition: transform 0.3s ease;
+}
+
+.rotated {
+    transform: rotate(180deg);
+}
+
+/* Super minimal Apple-like Settlement Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.settlement-modal {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.12);
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    animation: modal-appear 0.3s ease;
+    color: #333333;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+}
+
+@keyframes modal-appear {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.settlement-header {
+    background: #fafafa;
+    color: #333333;
+    padding: 16px 20px;
+    position: relative;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settlement-header h4 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #333333;
+}
+
+.settlement-date {
+    margin: 3px 0 0 0;
+    font-size: 0.8rem;
+    color: #787878;
+    font-weight: 400;
+}
+
+.settlement-body {
+    padding: 0;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: #ffffff;
+}
+
+.settlement-section {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settlement-section-title {
+    margin: 0;
+    padding: 12px 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333333;
+    background-color: #fafafa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.settlement-items {
+    padding: 2px 4px;
+}
+
+/* Super compact player results */
+.player-results-section .settlement-item {
+    padding: 8px 16px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 24px;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid #f3f3f3;
+    border-radius: 0;
+}
+
+.player-results-section .player-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.player-group {
+    color: #888888;
+    font-size: 0.7rem;
+    margin-left: 5px;
+}
+
+.profit-amount {
+    font-weight: 600;
+    color: #34c759; /* Apple green */
+    font-size: 0.85rem;
+}
+
+.loss-amount {
+    font-weight: 600;
+    color: #ff3b30; /* Apple red */
+    font-size: 0.85rem;
+}
+
+/* Payment items */
+.settlement-item {
+    padding: 8px 16px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.player-name {
+    font-weight: 500;
+    color: #333333;
+    font-size: 0.85rem;
+}
+
+.arrow-icon {
+    margin: 0 8px;
+    color: #8e8e93; /* Apple gray */
+    font-weight: normal;
+    font-size: 0.7rem;
+}
+
+.pay-amount {
+    margin-left: auto;
+    font-weight: 600;
+    color: #007aff; /* Apple blue */
+    font-size: 0.85rem;
+}
+
+.settlement-credit {
+    text-align: center;
+    padding: 12px;
+    color: #8e8e93;
+    font-size: 0.75rem;
+    font-weight: 400;
+    border-top: 1px solid #f0f0f0;
+}
+
+.settlement-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background-color: #fafafa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-close-settlement {
+    background-color: #f2f2f7;
+    color: #333333;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.btn-close-settlement:hover {
+    background-color: #e5e5ea;
+}
+
+.btn-export-settlement {
+    background-color: #007aff;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-export-settlement:hover {
+    background-color: #0071e3;
+}
+
+.no-payments {
+    color: #8e8e93;
+    font-style: italic;
+    padding: 12px;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+/* Button styles */
+.btn-primary {
+    background: #4A6FFF;
+    border: none;
+    transition: all 0.2s ease;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background: #3d5ce5;
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: #10b981;
+    border: none;
+    transition: all 0.2s ease;
+    padding: 8px 16px;
+    font-weight: 500;
+}
+
+.btn-success:hover {
+    background: #0e9f6e;
+    transform: translateY(-1px);
+}
+
+.btn-outline-light {
+    border-radius: 6px;
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-light:hover {
+    transform: translateY(-1px);
+}
+
+/* Table styles */
+.table {
+    color: #212529;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(74, 111, 255, 0.05);
+}
+
+/* Form control styles */
+.form-control, .form-select {
+    background-color: #fff;
+    border: 1px solid #e2e8f0;
+    color: #212529;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #4A6FFF;
+    box-shadow: 0 0 0 0.25rem rgba(74, 111, 255, 0.25);
+}
+
+.input-group-text {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #212529;
+}
+
+.btn-outline-secondary {
+    color: #4A6FFF;
+    border-color: #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #4A6FFF;
+    color: white;
+    border-color: #4A6FFF;
+}
+
+/* Footer styles */
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 6px;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.bi {
+    margin-right: 4px;
+}
+
+/* Mobile styles */
+.input-group-sm {
+    flex-wrap: nowrap;
+}
+
+.input-group-sm .form-control {
+    min-width: 60px;
+    text-align: center;
+}
+
+.input-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+}
+
+/* Export styling */
+.exporting {
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15) !important;
+    max-height: none !important;
+    border: 1px solid #f0f0f0;
+}
+
+.exporting .settlement-body {
+    max-height: none !important;
+}
+/* Media queries */
+@media (max-width: 767px) {
+    .container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .game-header h2 {
+        font-size: 1.5rem;
+    }
+    .card-header {
+        display: block !important;
+        text-align: center;
+    }
+    .card-header button {
+        margin-top: 10px;
+        width: 100%;
+    }
+    .form-control, .form-select, .btn {
+        font-size: 16px; /* Prevents iOS zoom on focus */
+    }
+    .table {
+        font-size: 0.9rem;
+    }
+    .input-group .btn {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
+    .confirmation-modal {
+        width: 95%;
+    }
+    
+    .confirmation-buttons {
+        flex-direction: column;
+    }
+}
