@@ -2,11 +2,54 @@
 {% from "components/player_form.html" import render_player_form %}
 {% from "components/group_form.html" import render_group_form %}
 {% from "components/player_table.html" import render_player_table %}
+{% from "components/info_icon.html" import render_info_icon %}
 
 {% block head %}
     <!-- Apple design system -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/apple.css') }}">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settlement.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fix-settlement.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mobile-fixes.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- Style fixes -->
+    <style>
+        /* Hide all settlement results by default */
+        #settlementResults {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            width: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+            position: absolute !important;
+            z-index: -9999 !important;
+        }
+        
+        /* Show settlement results when explicitly made visible */
+        #settlementResults.show-results {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            width: auto !important;
+            height: auto !important;
+            overflow: visible !important;
+            position: relative !important;
+            z-index: auto !important;
+            margin-top: 60px !important;
+        }
+        
+        /* Hide blue notification bars */
+        .alert-info, .alert-primary {
+            display: none !important;
+        }
+        
+        /* Make donation link yellow */
+        .settlement-credit a {
+            color: #FFCC00 !important;
+            font-weight: bold !important;
+        }
+    </style>
 {% endblock %}
 {% block title %}Poker Settle - Game{% endblock %}
 
@@ -25,17 +68,14 @@
     </div>
 </div>
 
-<!-- Settlement Results Section -->
 <div class="row mt-4">
     <div class="col-12">
-        <div id="settlementResults" class="settlement-section" style="display: none;">
+        <div id="settlementResults" class="settlement-section">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4>Settlement Results</h4>
-                    <div id="settlementDate" class="settlement-date"></div>
-                </div>
                 <div class="card-body">
-                    <h5>Player Results</h5>
+                    <div class="section-title-with-info">
+                        <h5>Player Results</h5>
+                    </div>
                     <div class="table-responsive mb-4">
                         <table class="table table-hover">
                             <thead>
@@ -53,7 +93,9 @@
                         </table>
                     </div>
                     
-                    <h5>Group Summary</h5>
+                    <div class="section-title-with-info">
+                        <h5>Group Summary</h5>
+                    </div>
                     <div class="table-responsive mb-4">
                         <table class="table table-hover">
                             <thead>
@@ -61,7 +103,6 @@
                                     <th>Group</th>
                                     <th>Initial</th>
                                     <th>Final</th>
-                                    <th>Game Net</th>
                                     <th>Settlement</th>
                                 </tr>
                             </thead>
@@ -71,7 +112,9 @@
                         </table>
                     </div>
                     
-                    <h5>Payments</h5>
+                    <div class="section-title-with-info">
+                        <h5>Payments</h5>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
@@ -91,21 +134,35 @@
                     
                     <div class="settlement-credit text-center mt-4">
                         Made with <i class="bi bi-heart-fill text-danger"></i> by Nikhil and Praneeth!
+                        <div class="mt-2">
+                            <a href="https://buymeacoffee.com/nikhilreddy" target="_blank" class="donation-link">
+                                <i class="bi bi-cup-hot"></i> Spend A Dollar on server, If you wanna make it work faster!
+                            </a>
+                        </div>
                     </div>
                     <div class="text-end mt-3">
-                        <button id="exportSettlement" class="btn btn-primary">
-                            <i class="bi bi-download"></i> Export
-                        </button>
+                        <div class="d-flex justify-content-end align-items-center">
+                            <button id="exportSettlement" class="btn btn-primary">
+                                <i class="bi bi-download"></i> Export
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
 
 {% block scripts %}
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script src="{{ url_for('static', filename='js/mobile-performance.js') }}"></script>
+<script src="{{ url_for('static', filename='js/game-direct-display.js') }}"></script>
 <script src="{{ url_for('static', filename='js/game.js') }}"></script>
 <script src="{{ url_for('static', filename='js/settlement.js') }}"></script>
+<script src="{{ url_for('static', filename='js/collapsible.js') }}"></script>
+<script src="{{ url_for('static', filename='js/tooltips.js') }}"></script>
+<!-- Our combined fixes - load after main scripts -->
+<script src="{{ url_for('static', filename='js/settlement-fixes.js') }}"></script>
 {% endblock %}

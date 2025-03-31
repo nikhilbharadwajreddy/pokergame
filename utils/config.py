@@ -17,11 +17,8 @@ SESSION_COOKIE_SECURE = APP_ENV == 'production'
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 
-# MongoDB settings
-MONGO_URI = os.environ.get('MONGO_URI', None)
-MONGO_USERNAME = os.environ.get('MONGO_USERNAME', None)
-MONGO_PASSWORD = os.environ.get('MONGO_PASSWORD', None)
-MONGO_HOST = os.environ.get('MONGO_HOST', None)
+# MongoDB settings (Cloud only)
+MONGO_URI = os.environ.get('MONGO_URI', 'mongodb+srv://nikhilreddy:admin123@cluster0.kiaqj2n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&tlsAllowInvalidCertificates=true')
 
 # Application settings
 DATA_DIR = os.environ.get('DATA_DIR', os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data'))
@@ -35,18 +32,9 @@ SYSTEM_NAME = os.environ.get('SYSTEM_NAME', 'Poker Settle')
 def get_mongodb_connection_string():
     """
     Get MongoDB connection string from environment variables.
-    If MONGO_URI is set, use it directly.
-    Otherwise, build from component parts.
+    Only uses MONGO_URI directly as we only support cloud MongoDB.
     """
-    if MONGO_URI:
-        return MONGO_URI
-    
-    if MONGO_USERNAME and MONGO_PASSWORD and MONGO_HOST:
-        from urllib.parse import quote_plus
-        encoded_password = quote_plus(MONGO_PASSWORD)
-        return f'mongodb+srv://{MONGO_USERNAME}:{encoded_password}@{MONGO_HOST}/?retryWrites=true&w=majority&appName=Cluster0&tlsAllowInvalidCertificates=true'
-    
-    return None
+    return MONGO_URI
 
 def validate_config():
     """
@@ -61,8 +49,8 @@ def validate_config():
         if not ADMIN_PASSWORD:
             warnings.append("ADMIN_PASSWORD is not set")
             
-        if not get_mongodb_connection_string():
-            warnings.append("MongoDB connection information is missing")
+        if 'username:password' in MONGO_URI or not MONGO_URI:
+            warnings.append("Default MongoDB URI is being used. Please set a real connection string.")
         
         return warnings
     

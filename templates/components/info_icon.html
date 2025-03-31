@@ -1,0 +1,9 @@
+{% macro render_info_icon(tooltip_text, label) %}
+<span class="info-tooltip">
+    <i class="bi bi-info-circle info-icon" tabindex="0" role="button" aria-label="{{ label }}"></i>
+    <span class="tooltip-text">
+        {{ tooltip_text }}
+        <span class="tooltip-arrow"></span>
+    </span>
+</span>
+{% endmacro %}

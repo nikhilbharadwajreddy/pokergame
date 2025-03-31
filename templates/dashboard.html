@@ -7,6 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    {% from "components/info_icon.html" import render_info_icon %}
     <style>
         body {
             background-color: #f8f9fa;
@@ -129,6 +131,21 @@
             margin-right: 4px;
         }
         
+        /* Donation message styling */
+        .donation-message {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .donation-message a {
+            white-space: nowrap;
+        }
+        
         @media (max-width: 767px) {
             .container {
                 padding-left: 10px;
@@ -146,6 +163,25 @@
             }
             .table {
                 font-size: 0.9rem;
+            }
+            
+            /* Mobile adjustments for donation message */
+            .d-flex.justify-content-between.align-items-center {
+                flex-direction: column;
+                align-items: stretch !important;
+                gap: 10px;
+            }
+            
+            .donation-message {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            .history-filter {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 10px;
             }
         }
     </style>
@@ -179,14 +215,22 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Create New Game</h4>
+                        <div class="section-title-with-info">
+                            <h4>Create New Game</h4>
+                            {{ render_info_icon('Start a new poker game session with a unique name.', 'Information about creating a new game') }}
+                        </div>
                     </div>
                     <div class="card-body">
                         <form action="/create_game" method="post">
                             <div class="mb-3">
                                 <label for="game_name" class="form-label">Game Name</label>
-                                <input type="text" class="form-control" id="game_name" name="game_name" 
-                                       placeholder="Leave blank for date as name">
+                                <div class="d-flex align-items-center">
+                                    <input type="text" class="form-control" id="game_name" name="game_name" 
+                                           placeholder="Leave blank for date as name">
+                                    <span class="ms-2">
+                                        {{ render_info_icon('Optional: Give your game a name, or leave blank to use today\'s date.', 'Information about game name field') }}
+                                    </span>
+                                </div>
                             </div>
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">
@@ -209,10 +253,22 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Game Name</th>
-                                            <th>Date Created</th>
-                                            <th>Players</th>
-                                            <th>Actions</th>
+                                            <th>
+                                                Game Name
+                                                {{ render_info_icon('The name you gave this game or the date it was created', 'Information about game name column') }}
+                                            </th>
+                                            <th>
+                                                Date Created
+                                                {{ render_info_icon('When this game was created', 'Information about date created column') }}
+                                            </th>
+                                            <th>
+                                                Players
+                                                {{ render_info_icon('Number of players in this game', 'Information about players column') }}
+                                            </th>
+                                            <th>
+                                                Actions
+                                                {{ render_info_icon('Open the game to view or edit details', 'Information about actions column') }}
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -247,16 +303,21 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Settlement History <span class="badge bg-primary" id="historyCount">0</span></h4>
+                        <div class="section-title-with-info">
+                            <h4>Settlement History <span class="badge bg-primary" id="historyCount">0</span></h4>
+                            {{ render_info_icon('History of all your settlements across games. Filter by game using the dropdown.', 'Information about settlement history') }}
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="history-filter">
-                            <select id="gameFilter" class="form-select form-select-sm">
-                                <option value="all">All Games</option>
-                                {% for game in user_data.games %}
-                                    <option value="{{ game.game_id }}">{{ game.game_name }}</option>
-                                {% endfor %}
-                            </select>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="history-filter">
+                                <select id="gameFilter" class="form-select form-select-sm">
+                                    <option value="all">All Games</option>
+                                    {% for game in user_data.games %}
+                                        <option value="{{ game.game_id }}">{{ game.game_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
                         <div id="settlementHistory">
                             <div class="text-center py-4">
@@ -275,7 +336,10 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Players</h4>
+                        <div class="section-title-with-info">
+                            <h4>Players</h4>
+                            {{ render_info_icon('List of all players you\'ve added across your games.', 'Information about players section') }}
+                        </div>
                     </div>
                     <div class="card-body">
                         {% if user_data.players %}
@@ -296,7 +360,10 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Groups</h4>
+                        <div class="section-title-with-info">
+                            <h4>Groups</h4>
+                            {{ render_info_icon('List of all groups you\'ve created across your games.', 'Information about groups section') }}
+                        </div>
                     </div>
                     <div class="card-body">
                         {% if user_data.groups %}
@@ -324,5 +391,6 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script src="{{ url_for('static', filename='js/export.js') }}"></script>
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tooltips.js') }}"></script>
 </body>
 </html>

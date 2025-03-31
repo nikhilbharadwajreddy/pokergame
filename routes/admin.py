@@ -300,6 +300,42 @@ def init_routes(user_model):
                              user_id=user_id, 
                              user_data=user_data)
     
+    # Update game data
+    @admin_bp.route('/admin/update_game_data', methods=['POST'])
+    def update_game_data():
+        # Check if admin is logged in
+        if 'admin' not in session:
+            return jsonify({'success': False, 'error': 'Admin access required'})
+        
+        # Get game data from request
+        game_data = request.json
+        if not game_data or not game_data.get('game_id') or not game_data.get('user_id'):
+            return jsonify({'success': False, 'error': 'Missing required data'})
+        
+        # Load user data
+        user_id = game_data.get('user_id')
+        game_id = game_data.get('game_id')
+        
+        user_data = user_model.load_user_data(user_id)
+        if not user_data:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        # Find the game
+        game_index = next((i for i, g in enumerate(user_data['games']) if g['game_id'] == game_id), None)
+        if game_index is None:
+            return jsonify({'success': False, 'error': 'Game not found'})
+        
+        # Update the game data
+        user_data['games'][game_index] = game_data
+        
+        # Save the updated user data
+        success = user_model.save_user_data(user_id, user_data)
+        
+        if success:
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to save data'})
+    
     # Delete user
     @admin_bp.route('/admin/delete_user', methods=['POST'])
     def delete_user():
@@ -330,8 +366,25 @@ def init_routes(user_model):
         # Get the game_expiration_enabled setting
         game_expiration_enabled = 'game_expiration_enabled' in request.form
         
-        # Update the user setting
-        success = user_model.update_user_setting(user_id, 'game_expiration_enabled', game_expiration_enabled)
+        # Get passcode if provided
+        passcode = request.form.get('passcode')
+        if passcode and (not passcode.isdigit() or len(passcode) < 4 or len(passcode) > 6):
+            return jsonify({'success': False, 'error': 'Passcode must be 4-6 digits'})
+        
+        # Load user data
+        user_data = user_model.load_user_data(user_id)
+        if not user_data:
+            return jsonify({'success': False, 'error': 'User not found'})
+        
+        # Update settings
+        user_data['game_expiration_enabled'] = game_expiration_enabled
+        
+        # Update passcode if provided
+        if passcode:
+            user_data['passcode'] = passcode
+        
+        # Save the updated user data
+        success = user_model.save_user_data(user_id, user_data)
         
         if success:
             return jsonify({'success': True, 'message': f'Settings updated for {user_id}'})

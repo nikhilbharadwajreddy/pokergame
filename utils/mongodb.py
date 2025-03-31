@@ -1,10 +1,16 @@
 from pymongo import MongoClient
 import logging
-from .config import get_mongodb_connection_string
+import json
+import os
+from .config import get_mongodb_connection_string, DATA_DIR
+
+# Ensure data directory exists
+os.makedirs(DATA_DIR, exist_ok=True)
 
 def get_mongodb_client():
     """
-    Get a MongoDB client connection using credentials from environment or default values.
+    Get a MongoDB client connection using credentials from environment.
+    If connection fails, provide a fallback warning but let the app work with local JSON files.
     """
     mongo_uri = get_mongodb_connection_string()
     
@@ -16,5 +22,7 @@ def get_mongodb_client():
         return client
     except Exception as e:
         print(f"Error connecting to MongoDB: {str(e)}")
+        print("⚠️ USING LOCAL FILE STORAGE FOR DEVELOPMENT ONLY!")
+        print(f"Data will be stored in {DATA_DIR}")
         # Return None to indicate connection failure
         return None

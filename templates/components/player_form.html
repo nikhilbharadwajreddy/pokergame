@@ -1,8 +1,12 @@
+{% from "components/info_icon.html" import render_info_icon %}
 {% macro render_player_form(game) %}
 <div class="card mb-3">
     <div class="collapsible-header" id="addPlayerHeader">
         <h5 class="mb-0">Add Player</h5>
-        <i class="bi bi-chevron-down collapse-icon"></i>
+        <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle info-icon me-2" data-tooltip="Add a player to participate in the poker game. Each player tracks their buy-in amount and final amount."></i>
+            <i class="bi bi-chevron-down collapse-icon"></i>
+        </div>
     </div>
     <div class="collapsible-content" id="addPlayerContent">
         <div class="card-body">
@@ -10,16 +14,22 @@
                 <input type="hidden" name="game_id" value="{{ game.game_id }}">
                 <div class="mb-3">
                     <label for="player_name" class="form-label">Player Name</label>
-                    <input type="text" class="form-control" id="player_name" name="player_name" required>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control" id="player_name" name="player_name" required>
+                        <i class="bi bi-info-circle info-icon ms-2" data-tooltip="Enter the player's name as it will appear in the game and settlement."></i>
+                    </div>
                 </div>
                 <div class="mb-3">
                     <label for="group_name" class="form-label">Group</label>
-                    <select class="form-select" id="group_name" name="group_name">
-                        <option value="">No Group</option>
-                        {% for group in game.groups %}
-                            <option value="{{ group }}">{{ group }}</option>
-                        {% endfor %}
-                    </select>
+                    <div class="d-flex align-items-center">
+                        <select class="form-select" id="group_name" name="group_name">
+                            <option value="">No Group</option>
+                            {% for group in game.groups %}
+                                <option value="{{ group }}">{{ group }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="bi bi-info-circle info-icon ms-2" data-tooltip="Optionally assign this player to a group. Groups help organize settlements between teams."></i>
+                    </div>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">

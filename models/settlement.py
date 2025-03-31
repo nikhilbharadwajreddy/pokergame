@@ -225,7 +225,7 @@ class SettlementModel:
     def _calculate_internal_settlements(self, groups, player_data):
         """
         Calculate settlements within groups:
-        1. Other losers in a losing group pay to the biggest loser who handled external payments
+        1. Losers in a group pay winners directly
         2. The biggest winner in a winning group pays to other winners proportionally
         """
         internal_settlements = []
@@ -247,36 +247,53 @@ class SettlementModel:
                 elif profit_loss < -0.01:  # Player has negative balance
                     losing_players.append((player_name, abs(profit_loss)))
             
-            # If this group has multiple losers, handle losing group settlements
-            if len(losing_players) > 1:
+            # If this group has both winners and losers, handle settlements within group
+            if winning_players and losing_players:
+                # Sort winners by profit amount (highest first)
+                winning_players.sort(key=lambda x: x[1], reverse=True)
                 # Sort losers by loss amount (highest first)
                 losing_players.sort(key=lambda x: x[1], reverse=True)
                 
-                # The biggest loser (who handles external payments)
-                biggest_loser, biggest_loss = losing_players[0]
+                # Distribute payments from losers to winners
+                remaining_losses = {name: amount for name, amount in losing_players}
+                remaining_profits = {name: amount for name, amount in winning_players}
                 
-                # Other losers pay to the biggest loser
-                for loser_name, loss_amount in losing_players[1:]:  # Skip the biggest loser
-                    if loss_amount < 0.01:
+                for loser_name, loss_amount in losing_players:
+                    remaining_loss = remaining_losses[loser_name]
+                    if remaining_loss < 0.01:
                         continue
                         
-                    internal_settlements.append({
-                        'from': loser_name,
-                        'to': biggest_loser,
-                        'amount': round(loss_amount, 2),
-                        'note': f"Internal: Group {group_name}"
-                    })
+                    for winner_name, profit_amount in winning_players:
+                        remaining_profit = remaining_profits[winner_name]
+                        if remaining_profit < 0.01:
+                            continue
+                            
+                        # Calculate payment amount
+                        payment = min(remaining_loss, remaining_profit)
+                        if payment < 0.01:
+                            continue
+                            
+                        internal_settlements.append({
+                            'from': loser_name,
+                            'to': winner_name,
+                            'amount': round(payment, 2),
+                            'note': f"Internal: Group {group_name}"
+                        })
+                        
+                        # Update remaining amounts
+                        remaining_losses[loser_name] = round(remaining_loss - payment, 2)
+                        remaining_profits[winner_name] = round(remaining_profit - payment, 2)
+                        
+                        if remaining_losses[loser_name] < 0.01:
+                            break
             
-            # If this group has multiple winners, handle winning group distributions
-            if len(winning_players) > 1:
+            # If this group has multiple winners only (typical in a winning group), distribute winnings
+            elif len(winning_players) > 1:
                 # Sort winners by profit amount (highest first)
                 winning_players.sort(key=lambda x: x[1], reverse=True)
                 
                 # The biggest winner (who received external payments)
                 biggest_winner, biggest_profit = winning_players[0]
-                
-                # Calculate total profit in this group
-                total_profit = sum(profit for _, profit in winning_players)
                 
                 # Other winners should receive their share from the biggest winner
                 for winner_name, profit_amount in winning_players[1:]:  # Skip the biggest winner

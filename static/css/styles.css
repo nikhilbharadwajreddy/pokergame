@@ -6,6 +6,63 @@ body {
     font-family: 'Inter', sans-serif;
 }
 
+/* Fix the arrow for header tooltips */
+.header-info-icon .info-tooltip .tooltip-text .tooltip-arrow {
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Table header styling with icon separation */
+.header-text {
+    display: inline-block;
+    margin-right: 5px;
+}
+
+.header-info-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Fix header tooltips */
+.header-info-icon .info-tooltip .tooltip-text {
+    top: auto;
+    bottom: calc(100% + 15px); /* Position tooltip above the icon */
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    z-index: 2000; /* Extra high to ensure visibility */
+}
+
+/* Fix for table tooltips positioning */
+table th .info-tooltip .tooltip-text {
+    /* Move tooltip further away from header */
+    bottom: 150%;
+    /* Ensure it doesn't get cut off by table borders */
+    position: fixed;
+}
+
+/* Table headers with info icons */
+table th {
+    position: relative;
+    padding-right: 24px; /* Make room for the info icon */
+}
+
+table th .info-tooltip {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Special handling for the card header with Calculate Settlement button */
+.card-header .d-flex .section-title-with-info {
+    margin-right: 12px;
+}
+
 /* Card styles */
 .card {
     margin-bottom: 20px;
@@ -132,6 +189,7 @@ body {
 
 .collapse-icon {
     transition: transform 0.3s ease;
+    font-size: 1.2rem;
 }
 
 .rotated {
@@ -151,6 +209,11 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+
+/* Hide the settlement modal, we'll use the in-page results section instead */
+#settlementModal {
+    display: none !important;
 }
 
 .settlement-modal {
@@ -433,6 +496,120 @@ body {
     font-size: 14px;
 }
 
+/* Simpler tooltip approach */
+.info-icon {
+    color: #4A6FFF;
+    font-size: 0.85rem;
+    cursor: help;
+    position: relative;
+}
+
+.info-icon:hover {
+    color: #3d5ce5;
+}
+
+.info-icon:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 6px;
+    z-index: 999;
+    width: max-content;
+    max-width: 200px;
+    font-size: 0.8rem;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.info-icon:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 116%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+    z-index: 999;
+}
+
+/* Accessibility - keyboard focus styles */
+.info-tooltip:focus-within .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+.section-title-with-info {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Increased gap for better spacing */
+}
+
+/* Ensure table headers and card headers don't clip tooltips */
+.table-responsive,
+.card-header,
+.card-body,
+table,
+th,
+td {
+    overflow: visible !important;
+}
+
+/* Ensure info tooltips are always above other content */
+.info-tooltip {
+    position: relative;
+    display: inline-block;
+    z-index: 10; /* Higher than default but lower than the tooltip itself */
+}
+
+.info-tooltip .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1050; /* Increased z-index to appear above other elements */
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 0.8rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    pointer-events: none; /* Prevent the tooltip from blocking mouse events */
+}
+
+/* Tooltip arrow styles */
+.tooltip-arrow {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    margin-left: -10px;
+    border-width: 10px 10px 0;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+/* Remove the default arrow */
+.info-tooltip .tooltip-text::after {
+    display: none;
+}
+
+.info-tooltip:hover .tooltip-text, 
+.info-tooltip:focus-within .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
 /* Alert styles */
 .alert {
     border-radius: 6px;
@@ -502,5 +679,44 @@ body {
     
     .confirmation-buttons {
         flex-direction: column;
+    }
+
+    /* Mobile tooltip styles */
+    .info-tooltip .tooltip-text {
+        width: min(200px, 80vw);
+        font-size: 0.75rem;
+        padding: 10px;
+        z-index: 1010; /* Higher z-index on mobile */
+    }
+    
+    /* Mobile positioning of info icons */
+    .card-header .d-flex {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    
+    .section-title-with-info {
+        margin-bottom: 8px;
+    }
+    
+    /* Make table headers stack better on mobile */
+    /* Mobile view for tooltips */
+    .info-icon:hover::after {
+        width: 80vw;
+        max-width: 250px;
+        white-space: normal;
+        line-height: 1.4;
+        font-size: 12px;
+        padding: 8px;
+    }
+
+    .info-icon {
+        font-size: 1rem; /* Larger target area on mobile */
+        padding: 5px;
+    }
+
+    /* Ensure section titles with info icons display well on mobile */
+    .section-title-with-info {
+        flex-wrap: wrap;
     }
 }

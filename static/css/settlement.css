@@ -1,0 +1,110 @@
+/* Settlement Results Styling */
+.settlement-section {
+    margin-top: 40px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    background-color: #ffffff;
+    animation: fadeIn 0.5s ease-in-out;
+    z-index: 10; /* Ensure it's above other elements */
+    position: relative; /* Added for z-index to work */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.settlement-date {
+    font-size: 0.9rem;
+    color: #666666;
+    margin-top: 4px;
+}
+
+.section-title-with-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.section-title-with-info h4, 
+.section-title-with-info h5 {
+    margin-bottom: 0;
+}
+
+.info-icon {
+    color: #4A6FFF;
+    cursor: help;
+}
+
+.profit {
+    color: #10b981 !important;
+    font-weight: 600;
+}
+
+.loss {
+    color: #ef4444 !important;
+    font-weight: 600;
+}
+
+.settlement-credit {
+    font-size: 0.8rem;
+    color: #888888;
+    margin: 20px 0;
+}
+
+/* Table improvements */
+.table-hover tbody tr:hover {
+    background-color: #f8f9ff;
+}
+
+.table th {
+    background-color: #f8f9ff;
+    color: #4A6FFF;
+    font-weight: 600;
+    border-bottom: 2px solid #e0e7ff;
+}
+
+.table td.amount {
+    font-weight: 600;
+}
+
+/* Tooltip styling */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 240px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -120px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

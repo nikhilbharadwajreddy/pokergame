@@ -1,0 +1,49 @@
+/* Emergency fix for settlement display issues */
+
+/* Always hide the settlement results by default */
+#settlementResults {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Only show when explicitly made visible by JavaScript */
+#settlementResults[data-status="visible"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: 60px !important;
+    margin-bottom: 60px !important;
+}
+
+/* Ensure proper scrolling */
+html, body {
+    overflow-y: auto !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Styling improvements for the settlement results */
+#settlementResults .card {
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#settlementResults .card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+#settlementResults .table {
+    margin-bottom: 0;
+}
+
+#settlementResults .table td, 
+#settlementResults .table th {
+    vertical-align: middle;
+}
+
+/* Make sure all buttons are visible */
+#exportSettlement {
+    display: inline-block !important;
+    visibility: visible !important;
+}

@@ -1,0 +1,107 @@
+/* Specific fixes for settlement results display */
+
+/* Fix scrolling issues with settlement results */
+html, body {
+    overflow-y: auto !important;
+    height: auto !important;
+    position: static !important;
+}
+
+/* Reset any fixed positioning that might lock scrolling */
+#settlementResults {
+    position: relative !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    margin-bottom: 80px !important; /* Add space at bottom */
+    margin-top: 60px !important;
+    border-radius: 10px !important;
+    background-color: #fff !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 100 !important; /* Lower than 1000 to avoid scroll issues */
+}
+
+/* Force display of settlement results */
+#settlementResults.settlement-section {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* If the section is shown when Calculate Settlement is clicked, hide any popup modals */
+.modal#settlementModal, 
+.modal-overlay,
+.mdc-dialog {
+    display: none !important;
+}
+
+/* Make sure tables inside the settlement section are properly visible */
+#settlementResults .table-responsive {
+    overflow: visible !important;
+}
+
+/* Add clear section headings */
+#settlementResults .section-title-with-info h5 {
+    font-size: 1.2rem !important;
+    color: #333 !important;
+    margin-top: 20px !important;
+}
+
+/* Make sure all table cells show content properly */
+#settlementResults td, 
+#settlementResults th {
+    padding: 10px 15px !important;
+    vertical-align: middle !important;
+    white-space: normal !important;
+}
+
+/* Make sure the export button is visible */
+#exportSettlement {
+    display: inline-block !important;
+    margin-top: 15px !important;
+}
+
+/* Style the donation link */
+.settlement-credit {
+    font-size: 14px !important;
+    padding: 10px 5px !important;
+    margin-top: 20px !important;
+    border-top: 1px solid #f0f0f0 !important;
+}
+
+.settlement-credit a {
+    color: #6c757d !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+}
+
+.settlement-credit a:hover {
+    color: #4A6FFF !important;
+}
+
+@media (max-width: 767px) {
+    .settlement-credit {
+        font-size: 12px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 8px !important;
+        align-items: center !important;
+    }
+}
+
+/* Flash warning for unbalanced settlements */
+@keyframes flash-warning {
+    0% { background-color: #dc3545; color: white; }
+    50% { background-color: #ffc107; color: black; }
+    100% { background-color: #dc3545; color: white; }
+}
+
+.flash-warning {
+    animation: flash-warning 0.5s 3;
+    font-weight: bold !important;
+}

@@ -1,7 +1,17 @@
+{% from "components/info_icon.html" import render_info_icon %}
 {% block header %}
 <div class="container-fluid px-3 mb-4 mt-2">
-    <a href="/dashboard" class="btn btn-link text-dark p-0">
-        <i class="bi bi-chevron-left fs-4"></i>
-    </a>
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="/dashboard" class="btn btn-link text-dark p-0">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </a>
+        
+        <div class="section-title-with-info">
+            <h4 class="mb-0">Poker Settle</h4>
+            <i class="bi bi-info-circle info-icon" data-tooltip="Track players, buy-ins, and final amounts. This app helps you calculate the most efficient way to settle up after a poker game."></i>
+        </div>
+        
+        <div></div> <!-- Empty div for balanced flex spacing -->
+    </div>
 </div>
 {% endblock %}

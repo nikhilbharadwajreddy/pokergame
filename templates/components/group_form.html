@@ -1,8 +1,12 @@
+{% from "components/info_icon.html" import render_info_icon %}
 {% macro render_group_form(game) %}
 <div class="card mb-3">
     <div class="collapsible-header" id="addGroupHeader">
         <h5 class="mb-0">Add Group</h5>
-        <i class="bi bi-chevron-down collapse-icon"></i>
+        <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle info-icon me-2" data-tooltip="Create a group to organize players into teams. Groups make it easier to track and settle debts between teams."></i>
+            <i class="bi bi-chevron-down collapse-icon"></i>
+        </div>
     </div>
     <div class="collapsible-content" id="addGroupContent">
         <div class="card-body">
@@ -10,7 +14,10 @@
                 <input type="hidden" name="game_id" value="{{ game.game_id }}">
                 <div class="mb-3">
                     <label for="group_name" class="form-label">Group Name</label>
-                    <input type="text" class="form-control" id="group_name" name="group_name" required>
+                    <div class="d-flex align-items-center">
+                        <input type="text" class="form-control" id="group_name" name="group_name" required>
+                        <i class="bi bi-info-circle info-icon ms-2" data-tooltip="Enter a name for this group. Players can be assigned to this group to track team winnings/losses."></i>
+                    </div>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">

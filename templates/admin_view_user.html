@@ -147,6 +147,15 @@
                                 <small class="form-text text-muted d-block">When enabled, games will become view-only 24 hours after settlement calculation.</small>
                             </div>
                             
+                            <div class="mb-3">
+                                <label for="passcode" class="form-label">Passcode</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="passcode" name="passcode" value="{{ user_data.passcode or '' }}" pattern="[0-9]{4,6}" title="4-6 digit numeric passcode" placeholder="4-6 digit passcode">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="generatePasscode()">Generate</button>
+                                </div>
+                                <small class="form-text text-muted">4-6 digit numeric passcode for account security</small>
+                            </div>
+                            
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-save"></i> Save Settings
                             </button>
@@ -162,6 +171,7 @@
                     </div>
                     <div class="card-body">
                         <p><strong>User ID:</strong> {{ user_id }}</p>
+                        <p><strong>Passcode:</strong> {{ user_data.passcode or 'Not set' }}</p>
                         <p><strong>Last Modified:</strong> {{ user_data.last_modified or 'Unknown' }}</p>
                         <p><strong>Total Players:</strong> {{ user_data.players|length }}</p>
                         <p><strong>Total Games:</strong> {{ user_data.games|length }}</p>
@@ -241,10 +251,13 @@
         </div>
         
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h4><i class="bi bi-controller"></i> Games</h4>
+                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#gamesTable" aria-expanded="true" aria-controls="gamesTable">
+                    Toggle View
+                </button>
             </div>
-            <div class="card-body">
+            <div class="card-body collapse show" id="gamesTable">
                 {% if user_data.games %}
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -256,6 +269,7 @@
                                     <th>Created</th>
                                     <th>Players</th>
                                     <th>Groups</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -267,6 +281,11 @@
                                         <td>{{ game.date_created }}</td>
                                         <td>{{ game.players|length }}</td>
                                         <td>{{ game.groups|length }}</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-primary" onclick="editGame('{{ game.game_id }}')">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </button>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -277,6 +296,78 @@
                         No games found.
                     </div>
                 {% endif %}
+            </div>
+        </div>
+        
+        <!-- Game Editor Form -->
+        <div class="card mt-4" id="gameEditorCard" style="display: none;">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4><i class="bi bi-pencil-square"></i> Edit Game Data</h4>
+                <button type="button" class="btn-close" aria-label="Close" onclick="closeGameEditor()"></button>
+            </div>
+            <div class="card-body">
+                <form id="gameEditorForm">
+                    <input type="hidden" id="editGameId" name="game_id">
+                    <input type="hidden" id="editUserId" name="user_id" value="{{ user_id }}">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Game Name</label>
+                            <input type="text" class="form-control" id="editGameName" name="game_name">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Created Date</label>
+                            <input type="text" class="form-control" id="editGameDate" name="date_created" disabled>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Players</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="playersContainer">
+                                        <!-- Player fields will be added here dynamically -->
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2" onclick="addPlayerField()">
+                                        <i class="bi bi-plus-circle"></i> Add Player
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Groups</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="groupsContainer">
+                                        <!-- Group fields will be added here dynamically -->
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-success mt-2" onclick="addGroupField()">
+                                        <i class="bi bi-plus-circle"></i> Add Group
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="editGameSettled" name="is_settled">
+                        <label class="form-check-label" for="editGameSettled">Game Settled</label>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary" onclick="closeGameEditor()">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="saveGameData()">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
         
@@ -295,5 +386,258 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Generate a random passcode
+        function generatePasscode() {
+            const length = Math.floor(Math.random() * 3) + 4; // 4-6 digits
+            let passcode = '';
+            for (let i = 0; i < length; i++) {
+                passcode += Math.floor(Math.random() * 10);
+            }
+            document.getElementById('passcode').value = passcode;
+        }
+        
+        // Game Editor JavaScript follows
+    <script>
+        // Store the full user data in a JavaScript variable
+        const userData = {{ user_data|tojson|safe }};
+        let currentGame = null;
+        
+        // Find a game by ID
+        function findGameById(gameId) {
+            return userData.games.find(game => game.game_id === gameId);
+        }
+        
+        // Open the game editor
+        function editGame(gameId) {
+            // Find the game in the user's data
+            currentGame = findGameById(gameId);
+            if (!currentGame) {
+                alert('Game not found!');
+                return;
+            }
+            
+            // Populate basic game info
+            document.getElementById('editGameId').value = currentGame.game_id;
+            document.getElementById('editGameName').value = currentGame.game_name;
+            document.getElementById('editGameDate').value = currentGame.date_created;
+            document.getElementById('editGameSettled').checked = currentGame.is_settled || false;
+            
+            // Populate players
+            const playersContainer = document.getElementById('playersContainer');
+            playersContainer.innerHTML = '';
+            
+            if (currentGame.players && currentGame.players.length > 0) {
+                currentGame.players.forEach((player, index) => {
+                    addPlayerField(player, index);
+                });
+            } else {
+                // Add an empty player field if none exist
+                addPlayerField();
+            }
+            
+            // Populate groups
+            const groupsContainer = document.getElementById('groupsContainer');
+            groupsContainer.innerHTML = '';
+            
+            if (currentGame.groups && currentGame.groups.length > 0) {
+                currentGame.groups.forEach((group, index) => {
+                    addGroupField(group, index);
+                });
+            } else {
+                // Add an empty group field if none exist
+                addGroupField();
+            }
+            
+            // Show the editor
+            document.getElementById('gameEditorCard').style.display = 'block';
+            
+            // Scroll to the editor
+            document.getElementById('gameEditorCard').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Close the game editor
+        function closeGameEditor() {
+            document.getElementById('gameEditorCard').style.display = 'none';
+            currentGame = null;
+        }
+        
+        // Add a new player field
+        function addPlayerField(player = null, index = null) {
+            const playersContainer = document.getElementById('playersContainer');
+            const playerId = index !== null ? index : playersContainer.children.length;
+            
+            const playerFieldHtml = `
+                <div class="player-field mb-2" data-index="${playerId}">
+                    <div class="card">
+                        <div class="card-body p-2">
+                            <div class="d-flex justify-content-between mb-2">
+                                <h6 class="mb-0">Player ${playerId + 1}</h6>
+                                <button type="button" class="btn-close" onclick="removePlayerField(${playerId})"></button>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control form-control-sm" name="players[${playerId}][name]" value="${player ? player.name : ''}">
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <label class="form-label">Buy In</label>
+                                    <input type="number" class="form-control form-control-sm" name="players[${playerId}][buy_in]" value="${player ? player.buy_in : '10'}">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Final Amount</label>
+                                    <input type="number" class="form-control form-control-sm" name="players[${playerId}][final_amount]" value="${player ? player.final_amount : '0'}">
+                                </div>
+                            </div>
+                            <div class="mb-2 mt-2">
+                                <label class="form-label">Group</label>
+                                <select class="form-select form-select-sm" name="players[${playerId}][group]">
+                                    <option value="">None</option>
+                                    ${currentGame && currentGame.groups ? currentGame.groups.map(group => `
+                                        <option value="${group}" ${player && player.group === group ? 'selected' : ''}>${group}</option>
+                                    `).join('') : ''}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Create a temp div to hold the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = playerFieldHtml.trim();
+            
+            // Append the first child of the temp div (the player field)
+            playersContainer.appendChild(tempDiv.firstChild);
+        }
+        
+        // Remove a player field
+        function removePlayerField(index) {
+            const playerField = document.querySelector(`.player-field[data-index="${index}"]`);
+            if (playerField) {
+                playerField.remove();
+            }
+        }
+        
+        // Add a new group field
+        function addGroupField(group = null, index = null) {
+            const groupsContainer = document.getElementById('groupsContainer');
+            const groupId = index !== null ? index : groupsContainer.children.length;
+            
+            const groupFieldHtml = `
+                <div class="group-field mb-2" data-index="${groupId}">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="groups[${groupId}]" value="${group || ''}" placeholder="Group name">
+                        <button type="button" class="btn btn-outline-danger" onclick="removeGroupField(${groupId})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Create a temp div to hold the HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = groupFieldHtml.trim();
+            
+            // Append the first child of the temp div (the group field)
+            groupsContainer.appendChild(tempDiv.firstChild);
+        }
+        
+        // Remove a group field
+        function removeGroupField(index) {
+            const groupField = document.querySelector(`.group-field[data-index="${index}"]`);
+            if (groupField) {
+                groupField.remove();
+            }
+        }
+        
+        // Save the game data
+        function saveGameData() {
+            // Collect form data
+            const form = document.getElementById('gameEditorForm');
+            const formData = new FormData(form);
+            
+            // Convert form data to JSON
+            const gameData = {
+                game_id: formData.get('game_id'),
+                user_id: formData.get('user_id'),
+                game_name: formData.get('game_name'),
+                is_settled: formData.get('is_settled') === 'on',
+                players: [],
+                groups: []
+            };
+            
+            // Get all player fields
+            const playerFields = document.querySelectorAll('.player-field');
+            playerFields.forEach(field => {
+                const index = field.getAttribute('data-index');
+                const name = formData.get(`players[${index}][name]`);
+                const buyIn = parseFloat(formData.get(`players[${index}][buy_in]`));
+                const finalAmount = parseFloat(formData.get(`players[${index}][final_amount]`));
+                const group = formData.get(`players[${index}][group]`);
+                
+                if (name) {
+                    gameData.players.push({
+                        name,
+                        buy_in: buyIn,
+                        final_amount: finalAmount,
+                        group: group || null
+                    });
+                }
+            });
+            
+            // Get all group fields
+            const groupFields = document.querySelectorAll('.group-field');
+            groupFields.forEach(field => {
+                const index = field.getAttribute('data-index');
+                const groupName = formData.get(`groups[${index}]`);
+                
+                if (groupName) {
+                    gameData.groups.push(groupName);
+                }
+            });
+            
+            // Maintain original properties
+            if (currentGame) {
+                gameData.date_created = currentGame.date_created;
+                gameData.last_updated = new Date().toISOString();
+                gameData.settlement_calculated_at = currentGame.settlement_calculated_at;
+                
+                // Keep any other properties that aren't in the form
+                for (const key in currentGame) {
+                    if (!(key in gameData) && key !== 'players' && key !== 'groups') {
+                        gameData[key] = currentGame[key];
+                    }
+                }
+            }
+            
+            // Send the data to the server (for demonstration, log it to console)
+            console.log('Game Data:', gameData);
+            
+            // TODO: Send data to server via AJAX
+            fetch('/admin/update_game_data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gameData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Game data updated successfully!');
+                    // Refresh the page
+                    window.location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please check the console for details.');
+            });
+        }
+    </script>
 </body>
 </html>

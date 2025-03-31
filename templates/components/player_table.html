@@ -1,10 +1,23 @@
+{% from "components/info_icon.html" import render_info_icon %}
 {% macro render_player_table(game) %}
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h4>Players</h4>
-        <button id="calculate-settlement" class="btn btn-success">
-            <i class="bi bi-calculator"></i> Calculate Settlement
-        </button>
+        <div class="section-title-with-info">
+            <h4>Players</h4>
+            <i class="bi bi-info-circle info-icon" data-tooltip="Manage all players in the current game. Track buy-ins, final amounts, and calculate profits/losses."></i>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="me-3">
+                <div id="net-balance-display" class="d-flex align-items-center">
+                    <span id="net-balance-info" class="badge bg-secondary me-2">Net Balance: $0.00</span>
+                    <i class="bi bi-info-circle info-icon" data-tooltip="Net balance should be zero (total profits = total losses). Settlement will work best when this is zero."></i>
+                </div>
+            </div>
+            <button id="calculate-settlement" class="btn btn-success me-2">
+                <i class="bi bi-calculator"></i> Calculate Settlement
+            </button>
+            <i class="bi bi-info-circle info-icon" data-tooltip="Calculate the optimal settlement between players. Ensures the minimum number of transactions needed to settle all debts."></i>
+        </div>
     </div>
     <div class="card-body">
         {% if game.players %}
@@ -12,13 +25,13 @@
                 <table class="table table-hover">
                     <thead>
                         <tr>
-                        <th style="min-width: 100px;">Player</th>
-                        <th style="min-width: 120px;">Group</th>
-                        <th style="min-width: 150px;">Buy-in</th>
-                        <th style="min-width: 100px;">Final</th>
-                        <th style="min-width: 100px;">Profit/Loss</th>
-                            <th style="min-width: 50px;">Actions</th>
-                </tr>
+                            <th>Player&nbsp;&nbsp;<i class="bi bi-info-circle info-icon" data-tooltip="The player's name"></i></th>
+                            <th>Group&nbsp;&nbsp;<i class="bi bi-info-circle info-icon" data-tooltip="The team or group this player belongs to"></i></th>
+                            <th>Buy-in&nbsp;&nbsp;<i class="bi bi-info-circle info-icon" data-tooltip="The amount the player bought in for at the start"></i></th>
+                            <th>Final&nbsp;&nbsp;<i class="bi bi-info-circle info-icon" data-tooltip="The amount the player has at the end of the game"></i></th>
+                            <th>Profit/Loss&nbsp;&nbsp;<i class="bi bi-info-circle info-icon" data-tooltip="The difference between final amount and buy-in"></i></th>
+                            <th>Actions&nbsp;&nbsp;<i class="bi bi-info-circle info-icon" data-tooltip="Remove a player from the game"></i></th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for player in game.players %}
